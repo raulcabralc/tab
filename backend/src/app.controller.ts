@@ -1,12 +1,27 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get } from "@nestjs/common";
+import { InjectConnection } from "@nestjs/mongoose";
+import { Connection } from "mongoose";
 
-@Controller()
+@Controller("/")
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(@InjectConnection() private readonly db: Connection) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get("/")
+  home(): any {
+    return {
+      health: this.health().status,
+      mongo: this.mongo().mongoStatus,
+    };
+  }
+
+  @Get("/health")
+  health(): any {
+    return { status: "ok" };
+  }
+
+  @Get("/mongo")
+  mongo(): any {
+    const isConnected = this.db.readyState === 1;
+    return { mongoStatus: isConnected ? "ok" : "error" };
   }
 }
