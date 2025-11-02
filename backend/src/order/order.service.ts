@@ -4,7 +4,7 @@ import { CreateOrderDto } from "./types/dto/create-order.dto";
 import { OrderType } from "./types/enums/type.enum";
 import { OrderStatus } from "./types/enums/status.enum";
 import { Order } from "./order.schema";
-import type { OrderReturn } from "./types/interfaces/success.interface";
+import type { OrderReturn } from "./types/interfaces/return.interface";
 import { OrderPriority } from "./types/enums/priority.enum";
 
 @Injectable()
