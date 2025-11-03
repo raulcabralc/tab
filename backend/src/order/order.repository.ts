@@ -79,6 +79,7 @@ export class OrderRepository {
       id,
       {
         startedPreparing: startPreparing,
+        status: OrderStatus.PREPARING,
       },
       { new: true },
     );
@@ -91,6 +92,7 @@ export class OrderRepository {
       id,
       {
         finishedPreparing: finishPreparing,
+        status: OrderStatus.DONE,
       },
       { new: true },
     );
