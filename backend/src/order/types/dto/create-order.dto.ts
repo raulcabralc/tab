@@ -1,42 +1,36 @@
-import { Address } from "../interfaces/address.interface";
+import type { Address } from "../interfaces/address.interface";
 import { Origin } from "../enums/origin.enum";
 import { PaymentMethod } from "../enums/payment-method.enum";
 import { OrderType } from "../enums/type.enum";
 import { OrderItem } from "../interfaces/item.interface";
 import { OrderPriority } from "../enums/priority.enum";
-import { OrderStatus } from "../enums/status.enum";
 import {
-  IsBoolean,
-  IsDate,
-  isNumber,
+  IsArray,
   IsNumber,
+  IsObject,
+  IsOptional,
   IsString,
 } from "class-validator";
 
 export class CreateOrderDto {
-  @IsString()
-  id?: string;
-
   @IsString()
   priority: OrderPriority;
 
   @IsNumber()
   number: number;
 
-  @IsString()
-  status?: OrderStatus;
-
-  @IsDate()
-  ordered: Date;
-
+  @IsArray()
   items: OrderItem[];
 
   @IsString()
   type: OrderType;
 
+  @IsOptional()
   @IsNumber()
   tableNumber?: number;
 
+  @IsOptional()
+  @IsObject()
   address?: Address;
 
   @IsString()
@@ -57,20 +51,8 @@ export class CreateOrderDto {
   @IsNumber()
   amountPaid: number;
 
-  @IsNumber()
-  change?: number;
-
   @IsString()
   paymentMethod: PaymentMethod;
-
-  @IsBoolean()
-  isPaid?: boolean;
-
-  @IsDate()
-  startedPreparing?: Date | null;
-
-  @IsDate()
-  finishedPreparing?: Date | null;
 
   @IsString()
   origin: Origin;

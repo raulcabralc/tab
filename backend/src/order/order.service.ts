@@ -136,7 +136,7 @@ export class OrderService {
       };
     }
 
-    order = {
+    const orderCreation = {
       ...order,
       status: OrderStatus.PENDING,
       ordered: new Date(),
@@ -146,7 +146,7 @@ export class OrderService {
       finishedPreparing: null,
     };
 
-    return this.orderRepository.createOrder(order);
+    return this.orderRepository.createOrder(orderCreation);
   }
 
   async deleteOrder(id: string): Promise<Order | OrderReturn> {
