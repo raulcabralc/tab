@@ -56,14 +56,7 @@ export class WorkerService {
       pinHash: worker.pin,
     };
 
-    if (
-      worker.role !== WorkerRole.ADMIN &&
-      worker.role !== WorkerRole.BARTENDER &&
-      worker.role !== WorkerRole.CHEF &&
-      worker.role !== WorkerRole.DELIVERY &&
-      worker.role !== WorkerRole.MANAGER &&
-      worker.role !== WorkerRole.WAITER
-    ) {
+    if (!Object.values(WorkerRole).includes(worker.role)) {
       return {
         success: false,
         message: `Invalid role: ${worker.role}. Allowed roles: ADMIN, MANAGER, CHEF, BARTENDER, WAITER, DELIVERY`,
@@ -106,14 +99,7 @@ export class WorkerService {
         message: `Worker with id ${id} not found.`,
       };
 
-    if (
-      role !== WorkerRole.ADMIN &&
-      role !== WorkerRole.BARTENDER &&
-      role !== WorkerRole.CHEF &&
-      role !== WorkerRole.DELIVERY &&
-      role !== WorkerRole.MANAGER &&
-      role !== WorkerRole.WAITER
-    ) {
+    if (!Object.values(WorkerRole).includes(worker.role)) {
       return {
         success: false,
         message: `Invalid role: ${role}. Allowed roles: ADMIN, MANAGER, CHEF, BARTENDER, WAITER, DELIVERY`,
