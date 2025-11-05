@@ -6,10 +6,18 @@ import { OrderStatus } from "./types/enums/status.enum";
 import { Order } from "./order.schema";
 import type { OrderReturn } from "./types/interfaces/return.interface";
 import { OrderPriority } from "./types/enums/priority.enum";
+import { PaymentMethod } from "./types/enums/payment-method.enum";
+import { Origin } from "./types/enums/origin.enum";
+import { BusinessRepository } from "src/business/business.repository";
+import { BusinessDTO } from "src/business/types/dto/business.dto";
+import { WeekDay } from "src/business/types/enums/week-day.enum";
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly orderRepository: OrderRepository) {}
+  constructor(
+    private readonly orderRepository: OrderRepository,
+    private readonly businessRepository: BusinessRepository,
+  ) {}
 
   async index() {
     return await this.orderRepository.index();
@@ -50,22 +58,16 @@ export class OrderService {
       "complement",
     ];
 
-    const itemsFields = ["itemId", "itemName", "quantity", "ingredients"];
-
-    const otherFields = [
-      "id",
-      "status",
-      "ordered",
-      "tableName",
-      "address",
-      "change",
-      "isPaid",
-      "startPreparing",
-      "finishPreparing",
+    const itemsFields = [
+      "itemId",
+      "itemName",
+      "category",
+      "quantity",
+      "ingredients",
     ];
 
     for (const field of requiredFields) {
-      if (!order[field] && !otherFields.includes(field)) {
+      if (!(field in order)) {
         missingFields.push(field);
       }
     }
@@ -73,7 +75,7 @@ export class OrderService {
     if (missingFields.length > 0) {
       return {
         success: false,
-        message: `missing required fields: ${missingFields.join(", ")}`,
+        message: `Missing required fields: ${missingFields.join(", ")}`,
       };
     }
 
@@ -81,12 +83,12 @@ export class OrderService {
       if (order.type === OrderType.TABLE) {
         return {
           success: false,
-          message: "tableNumber is required for table orders.",
+          message: "TableNumber is required for table orders.",
         };
       } else {
         return {
           success: false,
-          message: "address is required for delivery orders.",
+          message: "Address is required for delivery orders.",
         };
       }
     }
@@ -95,7 +97,7 @@ export class OrderService {
       if (order.type === OrderType.TABLE) {
         return {
           success: false,
-          message: "address should not be provided for table orders.",
+          message: "Address should not be provided for table orders.",
         };
       }
     }
@@ -113,16 +115,16 @@ export class OrderService {
     if (missingAddressFields.length > 0) {
       return {
         success: false,
-        message: `missing required address fields: ${missingAddressFields.join(", ")}`,
+        message: `Missing required address fields: ${missingAddressFields.join(", ")}`,
       };
     }
 
     const missingItemsFields: string[] = [];
 
     if (order.items) {
-      for (let item in order.items) {
+      for (const item of order.items) {
         for (const field of itemsFields) {
-          if (!order.items[item][field]) {
+          if (!(field in item)) {
             missingItemsFields.push(field);
           }
         }
@@ -132,7 +134,28 @@ export class OrderService {
     if (missingItemsFields.length > 0) {
       return {
         success: false,
-        message: `missing required items fields: ${missingItemsFields.join(", ")}`,
+        message: `Missing required items fields: ${missingItemsFields.join(", ")}`,
+      };
+    }
+
+    if (!Object.values(OrderType).includes(order.type)) {
+      return {
+        success: false,
+        message: `Invalid type value: ${order.type}. Valid types: ${Object.values(OrderType).join(", ")}`,
+      };
+    }
+
+    if (!Object.values(PaymentMethod).includes(order.paymentMethod)) {
+      return {
+        success: false,
+        message: `Invalid paymentMethod value: ${order.paymentMethod}. Valid methods: ${Object.values(PaymentMethod).join(", ")}`,
+      };
+    }
+
+    if (!Object.values(Origin).includes(order.origin)) {
+      return {
+        success: false,
+        message: `Invalid origin value: ${order.origin}. Valid origins: ${Object.values(Origin).join(", ")}`,
       };
     }
 
@@ -146,7 +169,7 @@ export class OrderService {
       finishedPreparing: null,
     };
 
-    return this.orderRepository.createOrder(orderCreation);
+    return await this.orderRepository.createOrder(orderCreation);
   }
 
   async deleteOrder(id: string): Promise<Order | OrderReturn> {
@@ -167,10 +190,7 @@ export class OrderService {
     id: string,
     priority: OrderPriority,
   ): Promise<Order | OrderReturn> {
-    if (
-      (priority !== OrderPriority.HIGH && priority !== OrderPriority.NORMAL) ||
-      !this.isValidPriority(priority)
-    ) {
+    if (!Object.values(OrderPriority).includes(priority)) {
       return {
         success: false,
         message: `Invalid priority value: ${priority}. Accepted values: HIGH, NORMAL.`,
@@ -195,12 +215,7 @@ export class OrderService {
     id: string,
     status: OrderStatus,
   ): Promise<Order | OrderReturn> {
-    if (
-      (status !== OrderStatus.PENDING &&
-        status !== OrderStatus.PREPARING &&
-        status !== OrderStatus.SERVED) ||
-      !this.isValidStatus(status)
-    ) {
+    if (!Object.values(OrderStatus).includes(status)) {
       return {
         success: false,
         message: `Invalid status value: ${status}. Accepted values: PENDING, PREPARING, SERVED.`,
@@ -214,6 +229,52 @@ export class OrderService {
         success: false,
         message: `Order with id ${id} not found.`,
       };
+
+    if (["CANCELED", "DONE", "SERVED"].includes(status)) {
+      const todayWeekDay = new Date().getDay();
+      let day: WeekDay;
+
+      if (todayWeekDay === 0) {
+        day = WeekDay.SUNDAY;
+      } else if (todayWeekDay === 1) {
+        day = WeekDay.MONDAY;
+      } else if (todayWeekDay === 2) {
+        day = WeekDay.TUESDAY;
+      } else if (todayWeekDay === 3) {
+        day = WeekDay.WEDNESDAY;
+      } else if (todayWeekDay === 4) {
+        day = WeekDay.THURSDAY;
+      } else if (todayWeekDay === 5) {
+        day = WeekDay.FRIDAY;
+      } else {
+        day = WeekDay.SATURDAY;
+      }
+
+      // const orderRelatory: BusinessDTO = {
+      //   originalOrderId: id,
+      //   date: new Date().toISOString().split("T")[0],
+      //   weekDay: day,
+      //   total: updatedOrder.total,
+      //   paymentMethod: updatedOrder.paymentMethod,
+      //   origin: updatedOrder.origin,
+      //   itemsDenormalized: updatedOrder.items,
+      //   waiterId: updatedOrder.waiterId,
+      //   status: updatedOrder.status,
+      //   priority: updatedOrder.priority,
+      //   number: updatedOrder.number,
+      //   tableNumber: updatedOrder.tableNumber,
+      //   address: updatedOrder.address,
+      //   ordered: updatedOrder.ordered,
+      //   startedPreparing: updatedOrder.startedPreparing,
+      //   finishedPreparing: updatedOrder.finishedPreparing,
+      //   delivered: new Date().toISOString(),
+      // };
+
+      // CONTINUAR A INTEGRAÇÃO DE FINALIZAR O PEDIDO
+      // E CRIAR O RELATÓRIO LOGO EM SEGUIDA DO MESMO
+
+      // await this.businessRepository.create(orderRelatory);
+    }
 
     return updatedOrder;
   }
@@ -262,15 +323,5 @@ export class OrderService {
       };
 
     return updatedOrder;
-  }
-
-  /// TYPE GUARDS
-
-  private isValidPriority(priority: string): priority is OrderPriority {
-    return Object.values(OrderPriority).includes(priority as OrderPriority);
-  }
-
-  private isValidStatus(status: string): status is OrderStatus {
-    return Object.values(OrderStatus).includes(status as OrderStatus);
   }
 }
