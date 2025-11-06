@@ -242,7 +242,11 @@ export class OrderService {
         message: `Order with id ${id} not found.`,
       };
 
-    if (["CANCELED", "DONE", "SERVED"].includes(status)) {
+    if (
+      [OrderStatus.CANCELED, OrderStatus.DONE, OrderStatus.DELIVERED].includes(
+        status,
+      )
+    ) {
       const todayWeekDay = new Date().getDay();
       let day: WeekDay;
 
@@ -321,7 +325,10 @@ export class OrderService {
         cancellationReason: updatedOrder.cancellationReason || undefined,
       };
 
-      if (!updatedOrder.isPaid) {
+      if (
+        !updatedOrder.isPaid &&
+        !(updatedOrder.status === OrderStatus.CANCELED)
+      ) {
         return {
           success: false,
           message: `Order ${id} is not paid, skipping business report`,
