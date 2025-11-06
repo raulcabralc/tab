@@ -321,12 +321,19 @@ export class OrderService {
         cancellationReason: updatedOrder.cancellationReason || undefined,
       };
 
+      if (!updatedOrder.isPaid) {
+        return {
+          success: false,
+          message: `Order ${id} is not paid, skipping business report`,
+        };
+      }
+
       if (updatedOrder.type === OrderType.DELIVERY) {
         if (updatedOrder.status === OrderStatus.DONE) {
           return updatedOrder;
         }
 
-        if (updatedOrder.status === OrderStatus.SERVED) {
+        if (updatedOrder.status === OrderStatus.DELIVERED) {
           orderRelatory = {
             ...orderRelatory,
             timeToDelivery: Math.round(
