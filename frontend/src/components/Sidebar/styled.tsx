@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const LogoImage = styled.img`
   width: 60px;
@@ -70,6 +71,7 @@ export const NavItem = styled(NavLink)`
   width: 100%;
   color: ${(props) => props.theme.text};
   transition: all 0.1s ease-in-out;
+  gap: 16px;
 
   &.active {
     color: ${(props) => props.theme.primary};
@@ -86,6 +88,21 @@ export const NavItem = styled(NavLink)`
     background-color: ${(props) => props.theme.background};
     opacity: 0.8;
     font-weight: 600;
+  }
+
+  svg {
+    stroke-width: 2px;
+    color: ${(props) => props.theme.text};
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:hover svg {
+    stroke-width: 3px;
+  }
+
+  &.active svg {
+    stroke-width: 3px;
+    color: ${(props) => props.theme.primary};
   }
 `;
 
@@ -174,4 +191,38 @@ export const Switch = styled.label`
   input:checked + span:before {
     transform: translateX(19px);
   }
+`;
+
+export const ModalOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(1px);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ModalContainer = styled(motion.div)`
+  background-color: ${(props) => props.theme.sidebarBackground};
+  width: 700px;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid ${(props) => props.theme.sidebarEdge};
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-flow: column wrap;
+  gap: 16px;
+`;
+
+export const ModalHeader = styled.div`
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  color: ${(props) => props.theme.text};
+  font-weight: 700;
 `;

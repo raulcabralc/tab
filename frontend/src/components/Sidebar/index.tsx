@@ -16,20 +16,23 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 import logo from "../../assets/logo.png";
 import { useState } from "react";
+import UserModal from "../UserModal";
+import {
+  BarChart3,
+  BookOpen,
+  LayoutDashboard,
+  Users,
+  UtensilsCrossed,
+} from "lucide-react";
+
+import { AnimatePresence } from "framer-motion";
+
+import { userMock } from "@/user-mock";
 
 function Sidebar() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
-
-  const userMock = {
-    fullName: "Raul Cabral Caxeta",
-    displayName: "Raul Cabral",
-    avatar: "https://github.com/raulcabralc.png",
-    email: "raulcabralc@gmail.com",
-    role: "admin",
-    hireDate: "2022-01-01",
-  };
 
   return (
     <SidebarContainer>
@@ -40,13 +43,28 @@ function Sidebar() {
 
       <SidebarContent>
         <SidebarCategory>Operação</SidebarCategory>
-        <NavItem to="/">Dashboard</NavItem>
-        <NavItem to="/orders">Pedidos</NavItem>
+        <NavItem to="/">
+          <LayoutDashboard size={20} />
+          <span>Dashboard</span>
+        </NavItem>
+        <NavItem to="/orders">
+          <UtensilsCrossed size={20} />
+          <span>Pedidos</span>
+        </NavItem>
         <SidebarCategory>Gestão</SidebarCategory>
-        <NavItem to="/team">Equipe</NavItem>
-        <NavItem to="/menu">Cardápio</NavItem>
+        <NavItem to="/users">
+          <Users size={20} />
+          <span>Equipe</span>
+        </NavItem>
+        <NavItem to="/menu">
+          <BookOpen size={20} />
+          <span>Cardápio</span>
+        </NavItem>
         <SidebarCategory>Estratégia</SidebarCategory>
-        <NavItem to="/analysis">Análise</NavItem>
+        <NavItem to="/analysis">
+          <BarChart3 size={20} />
+          <span>Análise</span>
+        </NavItem>
       </SidebarContent>
 
       <ThemeToggleArea>
@@ -72,9 +90,11 @@ function Sidebar() {
         </UserCard>
       </SidebarFooter>
 
-      {isProfileModalOpen && (
-        <UserModal onClose={() => setIsProfileModalOpen(false)} />
-      )}
+      <AnimatePresence>
+        {isProfileModalOpen && (
+          <UserModal onClose={() => setIsProfileModalOpen(false)} />
+        )}
+      </AnimatePresence>
     </SidebarContainer>
   );
 }
