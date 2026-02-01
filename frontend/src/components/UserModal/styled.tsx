@@ -29,6 +29,13 @@ export const ModalContent = styled.div`
   grid-template-columns: 1fr 3fr;
   padding: 10px 20px;
   gap: 30px;
+
+  @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto 1fr;
+    gap: 0;
+  }
 `;
 
 export const UserMain = styled.div`
@@ -39,6 +46,11 @@ export const UserMain = styled.div`
   font-size: 1.3rem;
   align-items: center;
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+    padding-bottom: 20px;
+  }
 `;
 
 export const UserDetails = styled.div`
@@ -47,12 +59,37 @@ export const UserDetails = styled.div`
   gap: 0 50px;
   padding: 0 0 0 30px;
   border-left: 1px solid ${(props) => props.theme.sidebarEdge};
+
+  @media (max-width: 768px) {
+    padding-top: 20px;
+    border-left: none;
+    border-top: 1px solid ${(props) => props.theme.sidebarEdge};
+    gap: 25px 50px;
+  }
+
+  @media (max-width: 478px) {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 25px 50px;
+    align-content: center;
+  }
 `;
 
 export const Detail = styled.div`
   display: flex;
   flex-flow: column wrap;
-  gap: 10px;
+  gap: 0px;
+
+  &.switch {
+    gap: 5px;
+    display: none;
+  }
+
+  @media (max-width: 586px) {
+    &.switch {
+      display: flex;
+    }
+  }
 `;
 
 export const DetailName = styled.span`
@@ -96,7 +133,7 @@ export const ModalOptions = styled.div`
   display: flex;
   flex-flow: row wrap;
   gap: 10px;
-  justify-content: end;
+  justify-content: center;
 `;
 
 export const ModalButton = styled(NavLink)`

@@ -1,5 +1,10 @@
 import { Check, Pen, X } from "lucide-react";
-import { ModalContainer, ModalHeader, ModalOverlay } from "../Sidebar/styled";
+import {
+  ModalContainer,
+  ModalHeader,
+  ModalOverlay,
+  Switch,
+} from "../Sidebar/styled";
 import {
   Detail,
   DetailName,
@@ -16,6 +21,7 @@ import {
 import { userMock } from "@/user-mock";
 import { roleConversion } from "@/helpers/roleConversion";
 import { formatDate } from "@/helpers/formatDate";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const overlayVariants = {
   hidden: { opacity: 0 },
@@ -59,6 +65,8 @@ const modalVariants = {
 };
 
 function UserModal({ onClose }: { onClose: () => void }) {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <ModalOverlay
       onClick={onClose}
@@ -73,7 +81,7 @@ function UserModal({ onClose }: { onClose: () => void }) {
       >
         <ModalHeader>
           <XButton onClick={onClose}>
-            <X size={25} />
+            <X size={30} />
           </XButton>
         </ModalHeader>
 
@@ -99,6 +107,17 @@ function UserModal({ onClose }: { onClose: () => void }) {
             <Detail>
               <DetailName>Contratação</DetailName>
               <DetailValue>{formatDate(userMock.hireDate)}</DetailValue>
+            </Detail>
+            <Detail className="switch">
+              <DetailName>Modo Escuro</DetailName>
+              <Switch>
+                <input
+                  type="checkbox"
+                  onChange={toggleTheme}
+                  checked={theme === "dark"}
+                />
+                <span />
+              </Switch>
             </Detail>
             <Detail>
               <IsActive>

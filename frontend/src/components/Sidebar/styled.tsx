@@ -17,6 +17,11 @@ export const UserImage = styled.img`
   object-fit: cover;
   border-radius: 100%;
   border: solid 2px ${(props) => props.theme.sidebarCategory};
+
+  @media (max-width: 768px) {
+    width: 40px;
+    min-height: 40px;
+  }
 `;
 
 export const SidebarContainer = styled.div`
@@ -29,6 +34,17 @@ export const SidebarContainer = styled.div`
   border-right: 1px solid ${(props) => props.theme.sidebarEdge};
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 55px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-right: none;
+    border-top: 1px solid ${(props) => props.theme.sidebarEdge};
+    bottom: 0;
+  }
 `;
 
 export const SidebarLogo = styled.div`
@@ -42,6 +58,10 @@ export const SidebarLogo = styled.div`
   font-weight: bold;
   font-size: 1.8rem;
   cursor: default;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const SidebarContent = styled.nav`
@@ -49,6 +69,17 @@ export const SidebarContent = styled.nav`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  @media (max-width: 478px) {
+    gap: 0;
+  }
 `;
 
 export const SidebarCategory = styled.div`
@@ -61,6 +92,10 @@ export const SidebarCategory = styled.div`
   color: ${(props) => props.theme.sidebarCategory};
   padding: 12px;
   padding-bottom: 0px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const NavItem = styled(NavLink)`
@@ -72,6 +107,12 @@ export const NavItem = styled(NavLink)`
   color: ${(props) => props.theme.text};
   transition: all 0.1s ease-in-out;
   gap: 16px;
+
+  span {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 
   &.active {
     color: ${(props) => props.theme.primary};
@@ -104,6 +145,32 @@ export const NavItem = styled(NavLink)`
     stroke-width: 3px;
     color: ${(props) => props.theme.primary};
   }
+
+  @media (max-width: 768px) {
+    width: auto;
+    border-right: none;
+
+    &.active {
+      border-right: none;
+      border-top: 2px solid ${(props) => props.theme.primary};
+    }
+
+    &:not(.active) {
+      border-right: none;
+      border-top: 2px solid transparent;
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (max-width: 478px) {
+    svg {
+      size: 2px;
+    }
+  }
 `;
 
 export const SidebarFooter = styled.div`
@@ -133,10 +200,20 @@ export const UserCard = styled.div`
     text-overflow: ellipsis;
     font-size: 0.9rem;
     text-align: center;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   &:hover {
     background-color: ${(props) => props.theme.sidebarEdge};
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+    padding: 0;
+    background-color: none;
   }
 `;
 
@@ -149,6 +226,14 @@ export const ThemeToggleArea = styled.div`
   font-size: 0.8rem;
   font-weight: 600;
   color: ${(props) => props.theme.sidebarCategory};
+
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
+
+  @media (max-width: 586px) {
+    display: none;
+  }
 `;
 
 export const Switch = styled.label`
@@ -217,6 +302,14 @@ export const ModalContainer = styled(motion.div)`
   display: flex;
   flex-flow: column wrap;
   gap: 16px;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    width: 100vw;
+    height: max-content;
+    top: 0;
+    border-radius: 0;
+  }
 `;
 
 export const ModalHeader = styled.div`
