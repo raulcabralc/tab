@@ -20,7 +20,7 @@ export class Worker {
   email: string;
 
   // Senha do funcionário (criptografada)
-  @Prop({ required: true, select: false })
+  @Prop({ required: true })
   pinHash: string;
 
   // Se o funcionário está contratado

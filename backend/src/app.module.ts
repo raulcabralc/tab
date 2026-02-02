@@ -6,12 +6,14 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { WorkerModule } from "./worker/worker.module";
 import { BusinessModule } from "./business/business.module";
 import { NotificationsModule } from "./notifications/notifications.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
     OrderModule,
     WorkerModule,
     BusinessModule,
+    AuthModule,
     NotificationsModule,
 
     ConfigModule.forRoot({

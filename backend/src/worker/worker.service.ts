@@ -4,6 +4,7 @@ import { WorkerReturn } from "./types/interfaces/return.interface";
 import { CreateWorkerDto } from "./types/dto/create-worker.dto";
 import { WorkerRole } from "./types/enums/role.enum";
 import { Worker } from "./worker.schema";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class WorkerService {
@@ -20,6 +21,19 @@ export class WorkerService {
       return {
         success: false,
         message: `Worker with id ${id} not found.`,
+      };
+    }
+
+    return worker;
+  }
+
+  async findByEmail(email: string): Promise<Worker | WorkerReturn> {
+    const worker = await this.workerRepository.findByEmail(email);
+
+    if (!worker) {
+      return {
+        success: false,
+        message: `Worker with email ${email} not found.`,
       };
     }
 
@@ -51,9 +65,19 @@ export class WorkerService {
       };
     }
 
+    if (worker.pin.length < 4) {
+      return {
+        success: false,
+        message: "Pin must be at least 4 characters long.",
+      };
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const pinHash = await bcrypt.hash(worker.pin, salt);
+
     const workerCreation = {
       ...worker,
-      pinHash: worker.pin,
+      pinHash,
     };
 
     if (!Object.values(WorkerRole).includes(worker.role)) {
