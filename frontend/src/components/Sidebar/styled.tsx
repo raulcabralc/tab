@@ -34,6 +34,7 @@ export const SidebarContainer = styled.div`
   border-right: 1px solid ${(props) => props.theme.sidebarEdge};
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease-in-out;
+  z-index: 50;
 
   @media (max-width: 768px) {
     width: 100%;

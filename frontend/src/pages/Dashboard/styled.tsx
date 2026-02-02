@@ -4,8 +4,16 @@ import styled from "styled-components";
 export const DashboardContainer = styled.div`
   padding: 100px 150px;
 
-  @media (max-width: 768px) {
-    padding: 75px 100px;
+  @media (max-width: 1300px) {
+    padding: 30px 55px;
+  }
+
+  @media (max-width: 556px) {
+    padding: 30px 15px;
+  }
+
+  @media (max-width: 476px) {
+    padding: 30px 0px;
   }
 `;
 
@@ -15,9 +23,18 @@ export const DashboardGrid = styled.div`
   gap: 25px;
   padding: 30px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1060px) {
     grid-template-columns: 1fr;
     gap: 50px;
+  }
+
+  @media (max-width: 556px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (max-width: 476px) {
+    padding: 0;
   }
 `;
 
@@ -28,6 +45,11 @@ export const TitleContainer = styled.div`
   gap: 28px;
   align-items: center;
   padding: 30px;
+
+  @media (max-width: 410px) {
+    padding: 0 15px;
+    padding-bottom: 35px;
+  }
 `;
 
 export const TitleImage = styled.img`
@@ -37,6 +59,21 @@ export const TitleImage = styled.img`
   border-radius: 100%;
   object-fit: cover;
   border: solid 2px ${(props) => props.theme.primary};
+
+  @media (max-width: 556px) {
+    width: 80px;
+    min-height: 80px;
+  }
+
+  @media (max-width: 476px) {
+    width: 70px;
+    min-height: 70px;
+  }
+
+  @media (max-width: 410px) {
+    width: 60px;
+    min-height: 60px;
+  }
 `;
 
 export const TitleText = styled.span`
@@ -50,6 +87,14 @@ export const TitleText = styled.span`
     -apple-system,
     sans-serif;
   -webkit-text-stroke: 2px ${(props) => props.theme.primary};
+
+  @media (max-width: 476px) {
+    font-size: 3.3rem;
+  }
+
+  @media (max-width: 410px) {
+    font-size: 3rem;
+  }
 `;
 
 export const Card = styled(NavLink)`
