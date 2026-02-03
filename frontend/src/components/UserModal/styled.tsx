@@ -22,6 +22,9 @@ export const ModalUserImage = styled.img`
   min-height: 120px;
   border-radius: 50%;
   border: solid 2px ${(props) => props.theme.primary};
+  background-color: ${(props) => props.theme.sidebarEdge};
+  align-content: center;
+  font-size: 2rem;
 `;
 
 export const ModalContent = styled.div`

@@ -87,7 +87,13 @@ function UserModal({ onClose }: { onClose: () => void }) {
 
         <ModalContent>
           <UserMain>
-            <ModalUserImage src={userMock.avatar} />
+            {userMock.avatar ? (
+              <ModalUserImage src={userMock.avatar} alt="User" />
+            ) : (
+              <ModalUserImage
+                alt={userMock.displayName.split("")[0].toUpperCase()}
+              />
+            )}
             <p>{userMock.displayName}</p>
           </UserMain>
 
