@@ -1,5 +1,5 @@
 export interface Address {
-  cep: number;
+  zip: number;
   street: string;
   number: string;
   neighborhood: string;

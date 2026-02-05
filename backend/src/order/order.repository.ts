@@ -12,25 +12,33 @@ export class OrderRepository {
     @InjectModel("Order") private readonly orderModel: Model<Order>,
   ) {}
 
-  async index(): Promise<Order[]> {
-    const listedOrders = await this.orderModel.find().sort({ ordered: 1 });
+  async index(restaurantId: string): Promise<Order[]> {
+    const listedOrders = await this.orderModel
+      .find({
+        restaurantId: restaurantId,
+      })
+      .sort({ ordered: 1 });
 
     return listedOrders as Order[];
   }
 
-  async indexDay(): Promise<Order[]> {
+  async indexDay(restaurantId: string): Promise<Order[]> {
     const todayOrders = await this.orderModel.find({
       ordered: {
         $gte: new Date(new Date().setHours(0, 0, 0)),
         $lt: new Date(new Date().setHours(23, 59, 59)),
       },
+      restaurantId,
     });
 
     return todayOrders as Order[];
   }
 
-  async findOne(id: string): Promise<Order | null> {
-    const foundOrder = await this.orderModel.findById(id);
+  async findOne(restaurantId: string, id: string): Promise<Order | null> {
+    const foundOrder = await this.orderModel.findOne({
+      _id: id,
+      restaurantId: restaurantId,
+    });
 
     return foundOrder as Order;
   }
@@ -41,17 +49,27 @@ export class OrderRepository {
     return createdOrder as Order;
   }
 
-  async deleteOrder(id: string): Promise<Order> {
-    const deletedOrder = await this.orderModel.findByIdAndDelete(id);
+  async deleteOrder(restaurantId: string, id: string): Promise<Order> {
+    const deletedOrder = await this.orderModel.findOneAndDelete({
+      _id: id,
+      restaurantId: restaurantId,
+    });
 
     return deletedOrder as Order;
   }
 
   /// UPDATE
 
-  async changePriority(id: string, priority: OrderPriority): Promise<Order> {
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(
-      id,
+  async changePriority(
+    restaurantId: string,
+    id: string,
+    priority: OrderPriority,
+  ): Promise<Order> {
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      {
+        _id: id,
+        restaurantId,
+      },
       {
         priority,
       },
@@ -61,9 +79,16 @@ export class OrderRepository {
     return updatedOrder as Order;
   }
 
-  async changeStatus(id: string, status: OrderStatus): Promise<Order> {
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(
-      id,
+  async changeStatus(
+    restaurantId: string,
+    id: string,
+    status: OrderStatus,
+  ): Promise<Order> {
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      {
+        _id: id,
+        restaurantId,
+      },
       {
         status,
       },
@@ -73,9 +98,12 @@ export class OrderRepository {
     return updatedOrder as Order;
   }
 
-  async confirmPayment(id: string): Promise<Order> {
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(
-      id,
+  async confirmPayment(restaurantId: string, id: string): Promise<Order> {
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      {
+        _id: id,
+        restaurantId,
+      },
       {
         isPaid: true,
       },
@@ -85,9 +113,16 @@ export class OrderRepository {
     return updatedOrder as Order;
   }
 
-  async startPreparing(id: string, startPreparing: Date): Promise<Order> {
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(
-      id,
+  async startPreparing(
+    restaurantId: string,
+    id: string,
+    startPreparing: Date,
+  ): Promise<Order> {
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      {
+        _id: id,
+        restaurantId,
+      },
       {
         startedPreparing: startPreparing,
         status: OrderStatus.PREPARING,
@@ -98,9 +133,16 @@ export class OrderRepository {
     return updatedOrder as Order;
   }
 
-  async finishPreparing(id: string, finishPreparing: Date): Promise<Order> {
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(
-      id,
+  async finishPreparing(
+    restaurantId: string,
+    id: string,
+    finishPreparing: Date,
+  ): Promise<Order> {
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      {
+        _id: id,
+        restaurantId,
+      },
       {
         finishedPreparing: finishPreparing,
       },
@@ -111,12 +153,16 @@ export class OrderRepository {
   }
 
   async setTransactionHandler(
+    restaurantId: string,
     waiterId: string,
     waiterName: string,
     orderId: string,
   ): Promise<Order> {
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(
-      orderId,
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      {
+        _id: orderId,
+        restaurantId,
+      },
       {
         transactionHandlerId: waiterId,
         transactionHandlerName: waiterName,

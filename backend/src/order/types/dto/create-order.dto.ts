@@ -6,6 +6,7 @@ import { OrderItem } from "../interfaces/item.interface";
 import { OrderPriority } from "../enums/priority.enum";
 import {
   IsArray,
+  IsMongoId,
   IsNumber,
   IsObject,
   IsOptional,

@@ -25,12 +25,15 @@ export class OrderService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
-  async index() {
-    return await this.orderRepository.index();
+  async index(restaurantId: string): Promise<Order[]> {
+    return await this.orderRepository.index(restaurantId);
   }
 
-  async findOne(id: string): Promise<Order | OrderReturn> {
-    const order = await this.orderRepository.findOne(id);
+  async findOne(
+    restaurantId: string,
+    id: string,
+  ): Promise<Order | OrderReturn> {
+    const order = await this.orderRepository.findOne(restaurantId, id);
 
     if (!order)
       return {
@@ -41,7 +44,10 @@ export class OrderService {
     return order;
   }
 
-  async createOrder(order: CreateOrderDto): Promise<Order | OrderReturn> {
+  async createOrder(
+    restaurantId: string,
+    order: CreateOrderDto,
+  ): Promise<Order | OrderReturn> {
     const missingFields: string[] = [];
 
     const requiredFields = [
@@ -62,7 +68,7 @@ export class OrderService {
     ];
 
     const addressFields = [
-      "cep",
+      "zip",
       "street",
       "number",
       "neighborhood",
@@ -180,6 +186,7 @@ export class OrderService {
       isPaid: false,
       startedPreparing: null,
       finishedPreparing: null,
+      restaurantId: restaurantId,
     };
 
     this.notificationsGateway.notifyNewOrder(orderCreation);
@@ -198,8 +205,14 @@ export class OrderService {
     return createdOrder;
   }
 
-  async deleteOrder(id: string): Promise<Order | OrderReturn> {
-    const deletedOrder = await this.orderRepository.deleteOrder(id);
+  async deleteOrder(
+    restaurantId: string,
+    id: string,
+  ): Promise<Order | OrderReturn> {
+    const deletedOrder = await this.orderRepository.deleteOrder(
+      restaurantId,
+      id,
+    );
 
     if (!deletedOrder)
       return {
@@ -213,6 +226,7 @@ export class OrderService {
   /// UPDATE
 
   async changePriority(
+    restaurantId: string,
     id: string,
     priority: OrderPriority,
   ): Promise<Order | OrderReturn> {
@@ -224,6 +238,7 @@ export class OrderService {
     }
 
     const updatedOrder = await this.orderRepository.changePriority(
+      restaurantId,
       id,
       priority,
     );
@@ -238,6 +253,7 @@ export class OrderService {
   }
 
   async changeStatus(
+    restaurantId: string,
     id: string,
     status: OrderStatus,
   ): Promise<Order | OrderReturn> {
@@ -250,13 +266,27 @@ export class OrderService {
       };
     }
 
-    const updatedOrder = await this.orderRepository.changeStatus(id, status);
+    const updatedOrder = await this.orderRepository.changeStatus(
+      restaurantId,
+      id,
+      status,
+    );
 
     if (!updatedOrder)
       return {
         success: false,
         message: `Order with id ${id} not found.`,
       };
+
+    if (
+      status === OrderStatus.DONE &&
+      updatedOrder.type === OrderType.DELIVERY
+    ) {
+      return {
+        success: false,
+        message: `Cannot set status DONE for delivery orders. Use READY_TO_DELIVER and then DELIVERED.`,
+      };
+    }
 
     this.notificationsGateway.notifiyOrderStatusChange(
       id,
@@ -345,6 +375,7 @@ export class OrderService {
             : undefined,
         isCanceled: updatedOrder.status === OrderStatus.CANCELED,
         cancellationReason: updatedOrder.cancellationReason || undefined,
+        restaurantId: updatedOrder.restaurantId.toString(),
       };
 
       if (
@@ -358,10 +389,6 @@ export class OrderService {
       }
 
       if (updatedOrder.type === OrderType.DELIVERY) {
-        if (updatedOrder.status === OrderStatus.DONE) {
-          return updatedOrder;
-        }
-
         if (updatedOrder.status === OrderStatus.DELIVERED) {
           orderRelatory = {
             ...orderRelatory,
@@ -379,15 +406,21 @@ export class OrderService {
       this.notificationsGateway.notifyAnalyticsUpdate({
         type: "orderCompleted",
         revenue: updatedOrder.total,
-        ordersToday: await this.getTodayOrders(),
+        ordersToday: await this.getTodayOrders(restaurantId),
       });
     }
 
     return updatedOrder;
   }
 
-  async confirmPayment(id: string): Promise<Order | OrderReturn> {
-    let updatedOrder = await this.orderRepository.confirmPayment(id);
+  async confirmPayment(
+    restaurantId: string,
+    id: string,
+  ): Promise<Order | OrderReturn> {
+    let updatedOrder = await this.orderRepository.confirmPayment(
+      restaurantId,
+      id,
+    );
 
     if (!updatedOrder)
       return {
@@ -396,7 +429,12 @@ export class OrderService {
       };
 
     if (updatedOrder.finishedPreparing) {
-      const statusUpdate = await this.changeStatus(id, OrderStatus.DONE);
+      const newStatus =
+        updatedOrder.type === OrderType.DELIVERY
+          ? OrderStatus.READY_TO_DELIVER
+          : OrderStatus.DONE;
+
+      const statusUpdate = await this.changeStatus(restaurantId, id, newStatus);
 
       return statusUpdate;
     }
@@ -404,10 +442,14 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async startPreparing(id: string): Promise<Order | OrderReturn> {
+  async startPreparing(
+    restaurantId: string,
+    id: string,
+  ): Promise<Order | OrderReturn> {
     const startPreparing = new Date();
 
     const updatedOrder = await this.orderRepository.startPreparing(
+      restaurantId,
       id,
       startPreparing,
     );
@@ -427,8 +469,11 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async finishPreparing(id: string): Promise<Order | OrderReturn> {
-    const order = await this.orderRepository.findOne(id);
+  async finishPreparing(
+    restaurantId: string,
+    id: string,
+  ): Promise<Order | OrderReturn> {
+    const order = await this.orderRepository.findOne(restaurantId, id);
 
     if (!order)
       return {
@@ -446,6 +491,7 @@ export class OrderService {
     const finishPreparing = new Date();
 
     let updatedOrder = await this.orderRepository.finishPreparing(
+      restaurantId,
       id,
       finishPreparing,
     );
@@ -463,7 +509,12 @@ export class OrderService {
     );
 
     if (updatedOrder.isPaid) {
-      const statusUpdate = await this.changeStatus(id, OrderStatus.DONE);
+      const newStatus =
+        updatedOrder.type === OrderType.DELIVERY
+          ? OrderStatus.READY_TO_DELIVER
+          : OrderStatus.DONE;
+
+      const statusUpdate = await this.changeStatus(restaurantId, id, newStatus);
 
       return statusUpdate;
     }
@@ -471,7 +522,11 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async setTransactionHandler(waiterId: string, orderId: string) {
+  async setTransactionHandler(
+    restaurantId: string,
+    waiterId: string,
+    orderId: string,
+  ) {
     const waiter = await this.workerRepository.findOne(waiterId);
 
     if (!waiter)
@@ -483,6 +538,7 @@ export class OrderService {
     const waiterName = waiter.displayName;
 
     const updatedOrder = await this.orderRepository.setTransactionHandler(
+      restaurantId,
       waiterId,
       waiterName,
       orderId,
@@ -497,8 +553,8 @@ export class OrderService {
     return updatedOrder;
   }
 
-  private async getTodayOrders(): Promise<number> {
-    const orders = await this.orderRepository.indexDay();
+  private async getTodayOrders(restaurantId: string): Promise<number> {
+    const orders = await this.orderRepository.indexDay(restaurantId);
 
     return orders.length;
   }

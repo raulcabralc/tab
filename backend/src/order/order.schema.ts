@@ -6,6 +6,7 @@ import { PaymentMethod } from "./types/enums/payment-method.enum";
 import { Origin } from "./types/enums/origin.enum";
 import type { OrderItem } from "./types/interfaces/item.interface";
 import type { Address } from "./types/interfaces/address.interface";
+import mongoose from "mongoose";
 
 @Schema()
 export class Order {
@@ -108,6 +109,9 @@ export class Order {
 
   @Prop({ required: false })
   customerCount: number;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
+  restaurantId: mongoose.Types.ObjectId;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
