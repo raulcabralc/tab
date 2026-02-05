@@ -7,12 +7,14 @@ import { WorkerModule } from "./worker/worker.module";
 import { BusinessModule } from "./business/business.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { AuthModule } from "./auth/auth.module";
+import { RestaurantModule } from "./restaurant/restaurant.module";
 
 @Module({
   imports: [
     OrderModule,
     WorkerModule,
     BusinessModule,
+    RestaurantModule,
     AuthModule,
     NotificationsModule,
 
