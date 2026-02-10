@@ -39,8 +39,8 @@ export class AuthController {
   async me(@Req() req: Request) {
     if (!req.user) return null;
 
-    const { userId } = req.user;
+    const { restaurantId, userId } = req.user;
 
-    return await this.authService.me(userId);
+    return await this.authService.me(restaurantId, userId);
   }
 }

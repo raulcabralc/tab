@@ -12,7 +12,9 @@ export class AuthService {
   ) {}
 
   async validateWorker(email: string, pass: string): Promise<any> {
-    const worker = (await this.workerService.findByEmail(email)) as Worker;
+    const worker = (await this.workerService.strictFindByEmail(
+      email,
+    )) as Worker;
 
     if (!worker || !worker.pinHash) return null;
 
@@ -32,14 +34,16 @@ export class AuthService {
       email: w.email,
       role: w.role,
       restaurant: w.restaurantId.toString(),
+      isFirstLogin: w.isFirstLogin,
     };
 
     return {
       access_token: this.jwtService.sign(payload),
+      isFirstLogin: w.isFirstLogin,
     };
   }
 
-  async me(id: string) {
-    return await this.workerService.findOne(id);
+  async me(restaurantId: string, id: string) {
+    return await this.workerService.findOne(restaurantId, id);
   }
 }

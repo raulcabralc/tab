@@ -15,9 +15,6 @@ export class CreateWorkerDto {
   @IsEmail()
   email: string;
 
-  @IsString()
-  pin: string;
-
   @IsDateString()
   hireDate: Date;
 }

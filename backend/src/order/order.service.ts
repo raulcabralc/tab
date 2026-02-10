@@ -527,7 +527,7 @@ export class OrderService {
     waiterId: string,
     orderId: string,
   ) {
-    const waiter = await this.workerRepository.findOne(waiterId);
+    const waiter = await this.workerRepository.findOne(restaurantId, waiterId);
 
     if (!waiter)
       return {

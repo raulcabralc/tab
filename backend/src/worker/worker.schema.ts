@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { WorkerRole } from "./types/enums/role.enum";
+import mongoose from "mongoose";
 
 @Schema({ timestamps: true })
 export class Worker {
@@ -16,7 +17,7 @@ export class Worker {
   role: WorkerRole;
 
   // Email do funcionário
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, lowercase: true })
   email: string;
 
   // Senha do funcionário (criptografada)
@@ -30,6 +31,15 @@ export class Worker {
   // Data de contratação do funcionário
   @Prop({ required: true })
   hireDate: string;
+
+  @Prop({ required: false })
+  avatar: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
+  restaurantId: mongoose.Types.ObjectId;
+
+  @Prop({ default: true })
+  isFirstLogin: boolean;
 }
 
 export const WorkerSchema = SchemaFactory.createForClass(Worker);
