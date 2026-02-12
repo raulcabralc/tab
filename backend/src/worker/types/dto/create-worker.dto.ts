@@ -16,5 +16,5 @@ export class CreateWorkerDto {
   email: string;
 
   @IsDateString()
-  hireDate: Date;
+  hireDate: string;
 }

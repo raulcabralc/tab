@@ -217,6 +217,67 @@ export class WorkerService {
     return deletedWorker;
   }
 
+  async createWorkerSetup(
+    restaurantId: string,
+    worker: CreateWorkerDto & { pin: string },
+  ): Promise<Worker | WorkerReturn> {
+    const missingFields: string[] = [];
+
+    const requiredFields = [
+      "fullName",
+      "displayName",
+      "role",
+      "email",
+      "hireDate",
+      "pin",
+    ];
+
+    for (const field of requiredFields) {
+      if (!worker[field]) {
+        missingFields.push(field);
+      }
+    }
+
+    if (missingFields.length > 0) {
+      return {
+        success: false,
+        message: `Missing required fields: ${missingFields.join(", ")}.`,
+      };
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const pinHash = await bcrypt.hash(worker.pin, salt);
+
+    const workerCreation = {
+      ...worker,
+      pinHash,
+      isFirstLogin: true,
+      restaurantId,
+    };
+
+    if (!Object.values(WorkerRole).includes(worker.role)) {
+      return {
+        success: false,
+        message: `Invalid role: ${worker.role}. Allowed roles: ADMIN, MANAGER, CHEF, BARTENDER, WAITER, DELIVERY`,
+      };
+    }
+
+    const emailRegistered = await this.workerRepository.strictFindByEmail(
+      worker.email,
+    );
+
+    if (emailRegistered)
+      return {
+        success: false,
+        message: `Email ${worker.email} is already registered.`,
+      };
+
+    const createdWorker =
+      await this.workerRepository.createWorker(workerCreation);
+
+    return createdWorker;
+  }
+
   /// UPDATE
 
   async changeRole(

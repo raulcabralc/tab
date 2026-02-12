@@ -6,14 +6,20 @@ import {
 } from "@nestjs/common";
 import { RestaurantRepository } from "./restaurant.repository";
 import { CreateRestaurantDTO } from "./types/dto/create-restaurant.dto";
-import { Restaurant } from "./restaurant.schema";
+import { Restaurant, RestaurantDocument } from "./restaurant.schema";
 import { Address } from "./types/interface/address.interface";
 import { OpeningHours } from "./types/interface/opening-hours.interface";
 import { MenuItem } from "./types/interface/menu-item.interface";
+import { SetupDTO } from "./types/dto/setup.dto";
+import { WorkerService } from "src/worker/worker.service";
+import { WorkerRole } from "src/worker/types/enums/role.enum";
 
 @Injectable()
 export class RestaurantService {
-  constructor(private readonly restaurantRepository: RestaurantRepository) {}
+  constructor(
+    private readonly restaurantRepository: RestaurantRepository,
+    private readonly workerService: WorkerService,
+  ) {}
 
   async index(): Promise<Restaurant[]> {
     return await this.restaurantRepository.index();
@@ -60,27 +66,35 @@ export class RestaurantService {
         );
     }
 
-    if (restaurant.phone) {
-      const phoneExists = await this.restaurantRepository.findByPhone(
-        restaurant.phone,
-      );
+    const normalizedPhone = this.normalizePhone(restaurant.phone);
 
-      if (phoneExists) {
-        throw new ConflictException("Phone is already registered.");
-      }
+    if (normalizedPhone.length > 11) {
+      throw new BadRequestException(
+        "Invalid phone number. Please use this format: 00 9 9999 9999",
+      );
     }
 
-    if (restaurant.email) {
-      const emailExists = await this.restaurantRepository.findByEmail(
-        restaurant.email,
-      );
+    const phoneExists =
+      await this.restaurantRepository.findByPhone(normalizedPhone);
 
-      if (emailExists) {
-        throw new ConflictException("Email is already registered.");
-      }
+    if (phoneExists) {
+      throw new ConflictException("Restaurant phone is already registered.");
     }
 
-    return await this.restaurantRepository.create(restaurant);
+    const emailExists = await this.restaurantRepository.findByEmail(
+      restaurant.email,
+    );
+
+    if (emailExists) {
+      throw new ConflictException("Restaurant email is already registered.");
+    }
+
+    const restaurantCreation = {
+      ...restaurant,
+      phone: normalizedPhone,
+    };
+
+    return await this.restaurantRepository.create(restaurantCreation);
   }
 
   async update(
@@ -168,6 +182,95 @@ export class RestaurantService {
     return restaurant;
   }
 
+  async setup(setup: SetupDTO) {
+    if (!setup || !setup.user || !setup.restaurant) {
+      throw new BadRequestException("Setup needs 2 fields: user, restaurant.");
+    }
+
+    //
+
+    const restaurantErrors: string[] = [];
+
+    const restaurantFields = [
+      "name",
+      "image",
+      "description",
+      "address",
+      "phone",
+      "email",
+    ];
+
+    for (const field of restaurantFields) {
+      if (!setup.restaurant[field]) {
+        restaurantErrors.push(field);
+      }
+    }
+
+    const addressErrors: string[] = [];
+
+    const addressFields = ["zip", "street", "number", "neighborhood", "city"];
+
+    for (const field of addressFields) {
+      if (!setup.restaurant.address[field]) {
+        addressErrors.push(field);
+      }
+    }
+
+    const workerErrors: string[] = [];
+
+    const workerFields = ["fullName", "displayName", "email", "pin"];
+
+    for (const field of workerFields) {
+      if (!setup.user[field]) {
+        workerErrors.push(field);
+      }
+    }
+
+    const errorMessage = `${restaurantErrors.length > 0 ? "Required restaurant fields: " + restaurantErrors.join(", ") : "Restaurant fields correctly implemented"} | ${addressErrors.length > 0 ? "Required address (from restaurant) fields: " + addressErrors.join(", ") : "Address fields correctly implemented"} | ${workerErrors.length > 0 ? "Required user fields: " + workerErrors.join(", ") : "User fields correctly implemented"}`;
+
+    if (restaurantErrors.length > 0 || workerErrors.length > 0) {
+      throw new BadRequestException(errorMessage);
+    }
+
+    //
+
+    const normalizedPhone = this.normalizePhone(setup.restaurant.phone);
+
+    const createdRestaurant = (await this.create({
+      ...setup.restaurant,
+      phone: normalizedPhone,
+    })) as RestaurantDocument;
+    const restaurantId = createdRestaurant._id;
+
+    const todayString = new Date().toISOString().split("T")[0];
+
+    const userCreation = {
+      ...setup.user,
+      role: WorkerRole.ADMIN,
+      hireDate: todayString,
+    };
+
+    const createdUser = (await this.workerService.createWorkerSetup(
+      restaurantId,
+      userCreation,
+    )) as any;
+
+    if (!createdUser._id) {
+      await this.delete(restaurantId);
+
+      throw new ConflictException(createdUser.message);
+    }
+
+    const userId = createdUser._id;
+
+    await this.update(restaurantId, { creatorId: userId });
+
+    return {
+      success: true,
+      message: `Setup done. Restaurant ${createdRestaurant.name} created. User ${userCreation.fullName} created.`,
+    };
+  }
+
   ///
 
   async findByPhone(phone: string): Promise<Restaurant | null> {
@@ -235,5 +338,9 @@ export class RestaurantService {
     if (menuErrors.length > 0) return false;
 
     return true;
+  }
+
+  private normalizePhone(phone: string): string {
+    return phone.replace(/\D/g, "");
   }
 }

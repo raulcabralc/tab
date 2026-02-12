@@ -5,6 +5,9 @@ import { MenuItem } from "./types/interface/menu-item.interface";
 
 @Schema({ timestamps: true })
 export class Restaurant {
+  @Prop({ required: false })
+  creatorId: string;
+
   @Prop({ required: true })
   name: string;
 
@@ -37,3 +40,7 @@ export class Restaurant {
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);
+
+export type RestaurantDocument = Restaurant & {
+  _id: string;
+};

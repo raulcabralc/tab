@@ -43,3 +43,7 @@ export class Worker {
 }
 
 export const WorkerSchema = SchemaFactory.createForClass(Worker);
+
+export type WorkerDocument = Worker & {
+  _id: string;
+};
