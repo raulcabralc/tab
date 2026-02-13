@@ -105,18 +105,6 @@ export class WorkerController {
   async deactivate(@Req() req: Request, @Param("id") id: string) {
     const restaurantId = this.getRestaurantId(req);
 
-    const userId = this.getUserId(req);
-
-    const role = this.getRole(req);
-
-    if (userId !== id) {
-      if (!this.isAdminOrManager(role)) {
-        throw new UnauthorizedException(
-          "Route restricted to roles: ADMIN, MANAGER, OWN USER",
-        );
-      }
-    }
-
     return await this.workerService.deactivate(restaurantId, id);
   }
 
@@ -125,18 +113,6 @@ export class WorkerController {
   @Patch("/activate/:id")
   async activate(@Req() req: Request, @Param("id") id: string) {
     const restaurantId = this.getRestaurantId(req);
-
-    const userId = this.getUserId(req);
-
-    const role = this.getRole(req);
-
-    if (userId !== id) {
-      if (!this.isAdminOrManager(role)) {
-        throw new UnauthorizedException(
-          "Route restricted to roles: ADMIN, MANAGER, OWN USER",
-        );
-      }
-    }
 
     return await this.workerService.activate(restaurantId, id);
   }
