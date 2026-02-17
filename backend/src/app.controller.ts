@@ -26,7 +26,7 @@ export class AppController {
     }
 
     const isConnected = this.db.readyState === 1;
-    return { mongoStatus: isConnected ? "ok" : "error" };
+    return isConnected ? "ok" : "error";
   }
 
   ///
