@@ -84,31 +84,16 @@ export class MailService {
     `;
 
     try {
-      console.log({
-        message: "Enviando email via resend.",
-        email,
-        name,
-        tempPassword,
-        api_key: this.configService.get("RESEND_API_KEY"),
-      });
-
-      const { data, error } = await this.resend.emails.send({
+      await this.resend.emails.send({
         from: "TAB App <tab@raulc.dev>",
         to: [email],
         subject: "Bem-vindo(a) ao TAB! Seu acesso chegou.",
         html: content,
       });
-
-      if (error) {
-        console.error("[MailService] Erro retornado pelo Resend:", error);
-        return;
-      }
     } catch (e) {
-      console.log({
-        message:
-          "An unknown error has occured while trying to send the welcome email.",
-        error: e,
-      });
+      console.log(
+        "An unknown error has occured while trying to send the welcome email.",
+      );
     }
   }
 }
