@@ -40,6 +40,12 @@ export class Worker {
 
   @Prop({ default: true })
   isFirstLogin: boolean;
+
+  @Prop({ required: false })
+  resetPasswordToken?: string;
+
+  @Prop({ required: false })
+  resetPasswordExpires?: Date;
 }
 
 export const WorkerSchema = SchemaFactory.createForClass(Worker);

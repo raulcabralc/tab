@@ -12,6 +12,8 @@ import { AuthService } from "./auth.service";
 import type { Request } from "express";
 import { LoginDto } from "./types/dto/login.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { ForgotPasswordDTO } from "./types/dto/forgot-password.dto";
+import { ResetPasswordDTO } from "./types/dto/reset-password.dto";
 
 @Controller("/auth")
 export class AuthController {
@@ -42,5 +44,15 @@ export class AuthController {
     const { restaurantId, userId } = req.user;
 
     return await this.authService.me(restaurantId, userId);
+  }
+
+  @Post("/forgot-password")
+  async forgotPassword(@Body() forgotDto: ForgotPasswordDTO) {
+    return await this.authService.forgotPassword(forgotDto.email);
+  }
+
+  @Post("/reset-password")
+  async resetPassword(@Body() resetDto: ResetPasswordDTO) {
+    return await this.authService.resetPassword(resetDto.token, resetDto.pin);
   }
 }

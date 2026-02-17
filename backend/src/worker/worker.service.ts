@@ -3,7 +3,7 @@ import { WorkerRepository } from "./worker.repository";
 import { WorkerReturn } from "./types/interfaces/return.interface";
 import { CreateWorkerDto } from "./types/dto/create-worker.dto";
 import { WorkerRole } from "./types/enums/role.enum";
-import { Worker } from "./worker.schema";
+import { Worker, WorkerDocument } from "./worker.schema";
 import * as bcrypt from "bcrypt";
 import { UpdateWorkerDto } from "./types/dto/update-worker.dto";
 import { NewWorker } from "./types/interfaces/new-worker.interface";
@@ -401,6 +401,66 @@ export class WorkerService {
     const pinHash = await bcrypt.hash(pin, salt);
 
     return await this.workerRepository.updatePin(restaurantId, userId, pinHash);
+  }
+
+  async forgotPassword(
+    email: string,
+    resetToken: string,
+    expires: Date,
+  ): Promise<Worker | WorkerReturn> {
+    const userExists = await this.strictFindByEmail(email);
+
+    if (!userExists) {
+      return {
+        success: false,
+        message: `User with email ${email} not found.`,
+      };
+    }
+
+    return await this.workerRepository.forgotPassword(
+      email,
+      resetToken,
+      expires,
+    );
+  }
+
+  async resetPassword(
+    token: string,
+    newPin: string,
+  ): Promise<Worker | WorkerReturn> {
+    const worker = (await this.workerRepository.findByResetToken(
+      token,
+    )) as WorkerDocument;
+
+    const now = new Date();
+
+    if (!worker.resetPasswordExpires) {
+      return {
+        success: false,
+        message: "User not found.",
+      };
+    }
+
+    if (now > worker.resetPasswordExpires) {
+      return {
+        success: false,
+        message: "Reset token expired.",
+      };
+    }
+
+    const updatedWorker = await this.updateWorker(
+      worker.restaurantId.toString(),
+      WorkerRole.ADMIN,
+      worker._id.toString(),
+      { pin: newPin },
+    );
+
+    await this.workerRepository.resetPassword(
+      worker.restaurantId.toString(),
+      worker._id.toString(),
+    );
+
+    return updatedWorker;
   }
 
   ///

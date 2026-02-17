@@ -162,6 +162,37 @@ export class WorkerRepository {
     return updatedWorker as Worker;
   }
 
+  async forgotPassword(email: string, resetToken: string, expires: Date) {
+    const updatedWorker = await this.workerModel.findOneAndUpdate(
+      {
+        email,
+      },
+      {
+        resetPasswordToken: resetToken,
+        resetPasswordExpires: expires,
+      },
+      { new: true },
+    );
+
+    return updatedWorker as Worker;
+  }
+
+  async resetPassword(restaurantId: string, userId: string) {
+    const updatedWorker = await this.workerModel.findOneAndUpdate(
+      {
+        _id: userId,
+        restaurantId,
+      },
+      {
+        resetPasswordExpires: null,
+        resetPasswordToken: null,
+      },
+      { new: true },
+    );
+
+    return updatedWorker as Worker;
+  }
+
   /// UTILS
 
   async findByEmail(restaurantId: string, email: string): Promise<Worker> {
@@ -174,6 +205,14 @@ export class WorkerRepository {
 
   async strictFindByEmail(email: string): Promise<Worker> {
     const worker = await this.workerModel.findOne({ email });
+
+    return worker as Worker;
+  }
+
+  async findByResetToken(token: string): Promise<Worker> {
+    const worker = await this.workerModel.findOne({
+      resetPasswordToken: token,
+    });
 
     return worker as Worker;
   }
