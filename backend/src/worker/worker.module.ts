@@ -4,9 +4,12 @@ import { WorkerSchema } from "./worker.schema";
 import { WorkerRepository } from "./worker.repository";
 import { WorkerController } from "./worker.controller";
 import { WorkerService } from "./worker.service";
+import { MailModule } from "../mail/mail.module";
 
 @Module({
   imports: [
+    MailModule,
+
     MongooseModule.forFeature([{ name: "Worker", schema: WorkerSchema }]),
   ],
   controllers: [WorkerController],

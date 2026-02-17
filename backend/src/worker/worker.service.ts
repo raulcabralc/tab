@@ -7,10 +7,14 @@ import { Worker } from "./worker.schema";
 import * as bcrypt from "bcrypt";
 import { UpdateWorkerDto } from "./types/dto/update-worker.dto";
 import { NewWorker } from "./types/interfaces/new-worker.interface";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class WorkerService {
-  constructor(private readonly workerRepository: WorkerRepository) {}
+  constructor(
+    private readonly workerRepository: WorkerRepository,
+    private readonly mailService: MailService,
+  ) {}
 
   async index(restaurantId: string) {
     return await this.workerRepository.index(restaurantId);
@@ -106,6 +110,12 @@ export class WorkerService {
 
     const createdWorker =
       await this.workerRepository.createWorker(workerCreation);
+
+    await this.mailService.sendWelcomeEmail(
+      worker.email,
+      worker.displayName,
+      pin,
+    );
 
     return {
       worker: createdWorker,
