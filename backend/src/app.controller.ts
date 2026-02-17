@@ -21,7 +21,7 @@ export class AppController {
 
   @Get("/mongo")
   async mongo(): Promise<any> {
-    if (this.db.readyState === 2) {
+    if (this.db.readyState !== 1) {
       await this.waitForConnection(2000);
     }
 
