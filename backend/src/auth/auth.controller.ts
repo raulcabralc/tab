@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
-import { WorkerService } from "src/worker/worker.service";
+import { WorkerService } from "../worker/worker.service";
 import { AuthService } from "./auth.service";
 import type { Request } from "express";
 import { LoginDto } from "./types/dto/login.dto";

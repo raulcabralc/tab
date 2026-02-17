@@ -9,9 +9,9 @@ import {
 } from "class-validator";
 import { WeekDay } from "../enums/week-day.enum";
 import { ItemsDenormalized } from "../interfaces/items-denormalized.interface";
-import { PaymentMethod } from "src/order/types/enums/payment-method.enum";
-import { OrderType } from "src/order/types/enums/type.enum";
-import { Origin } from "src/order/types/enums/origin.enum";
+import { PaymentMethod } from "../../../order/types/enums/payment-method.enum";
+import { OrderType } from "../../../order/types/enums/type.enum";
+import { Origin } from "../../../order/types/enums/origin.enum";
 
 export class BusinessDTO {
   @IsString()

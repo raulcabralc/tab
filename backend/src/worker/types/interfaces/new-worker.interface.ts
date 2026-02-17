@@ -1,4 +1,4 @@
-import { Worker } from "src/worker/worker.schema";
+import { Worker } from "../../../worker/worker.schema";
 
 export interface NewWorker {
   worker: Worker;

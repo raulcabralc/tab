@@ -5,8 +5,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Observable } from "rxjs";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
+import { WorkerRole } from "../../worker/types/enums/role.enum";
 import { ROLES_KEY } from "../decorators/roles.decorator";
 
 @Injectable()

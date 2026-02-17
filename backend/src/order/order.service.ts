@@ -8,13 +8,13 @@ import type { OrderReturn } from "./types/interfaces/return.interface";
 import { OrderPriority } from "./types/enums/priority.enum";
 import { PaymentMethod } from "./types/enums/payment-method.enum";
 import { Origin } from "./types/enums/origin.enum";
-import { BusinessRepository } from "src/business/business.repository";
-import { BusinessDTO } from "src/business/types/dto/business.dto";
-import { WeekDay } from "src/business/types/enums/week-day.enum";
-import { WorkerRepository } from "src/worker/worker.repository";
-import { NotificationsGateway } from "src/notifications/notifications.gateway";
-import { NotificationEvent } from "src/notifications/types/enums/notification-event.enum";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
+import { BusinessRepository } from "../business/business.repository";
+import { BusinessDTO } from "../business/types/dto/business.dto";
+import { WeekDay } from "../business/types/enums/week-day.enum";
+import { WorkerRepository } from "../worker/worker.repository";
+import { NotificationsGateway } from "../notifications/notifications.gateway";
+import { NotificationEvent } from "../notifications/types/enums/notification-event.enum";
+import { WorkerRole } from "../worker/types/enums/role.enum";
 
 @Injectable()
 export class OrderService {

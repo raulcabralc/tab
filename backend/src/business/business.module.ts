@@ -4,7 +4,7 @@ import { BusinessService } from "./business.service";
 import { BusinessRepository } from "./business.repository";
 import { MongooseModule } from "@nestjs/mongoose";
 import { BusinessSchema } from "./business.schema";
-import { NotificationsModule } from "src/notifications/notifications.module";
+import { NotificationsModule } from "../notifications/notifications.module";
 
 @Module({
   imports: [

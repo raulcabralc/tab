@@ -1,4 +1,4 @@
-import { Order } from "src/order/order.schema";
+import { Order } from "../../../order/order.schema";
 
 export interface OrderReturn {
   success: boolean;

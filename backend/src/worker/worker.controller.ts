@@ -12,13 +12,13 @@ import {
 } from "@nestjs/common";
 import { WorkerService } from "./worker.service";
 import { CreateWorkerDto } from "./types/dto/create-worker.dto";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import type { Request } from "express";
 import { WorkerRole } from "./types/enums/role.enum";
 import { UpdateWorkerDto } from "./types/dto/update-worker.dto";
-import { RolesGuard } from "src/auth/guards/roles.guard";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { FirstLoginGuard } from "src/auth/guards/first-login.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { FirstLoginGuard } from "../auth/guards/first-login.guard";
 
 @Controller("/worker")
 export class WorkerController {

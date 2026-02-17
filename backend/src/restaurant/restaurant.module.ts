@@ -4,7 +4,7 @@ import { RestaurantController } from "./restaurant.controller";
 import { RestaurantRepository } from "./restaurant.repository";
 import { MongooseModule } from "@nestjs/mongoose";
 import { RestaurantSchema } from "./restaurant.schema";
-import { WorkerModule } from "src/worker/worker.module";
+import { WorkerModule } from "../worker/worker.module";
 
 @Module({
   imports: [

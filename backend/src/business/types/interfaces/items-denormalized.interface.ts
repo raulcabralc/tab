@@ -1,4 +1,4 @@
-import { ItemCategory } from "src/order/types/enums/item-category.enum";
+import { ItemCategory } from "../../../order/types/enums/item-category.enum";
 
 export interface ItemsDenormalized {
   itemId: string;

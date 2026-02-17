@@ -11,8 +11,8 @@ import { Address } from "./types/interface/address.interface";
 import { OpeningHours } from "./types/interface/opening-hours.interface";
 import { MenuItem } from "./types/interface/menu-item.interface";
 import { SetupDTO } from "./types/dto/setup.dto";
-import { WorkerService } from "src/worker/worker.service";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
+import { WorkerService } from "../worker/worker.service";
+import { WorkerRole } from "../worker/types/enums/role.enum";
 
 @Injectable()
 export class RestaurantService {

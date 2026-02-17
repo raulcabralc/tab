@@ -14,13 +14,12 @@ import {
 import { RestaurantService } from "./restaurant.service";
 import { CreateRestaurantDTO } from "./types/dto/create-restaurant.dto";
 import { Restaurant } from "./restaurant.schema";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import type { Request } from "express";
-import { FirstLoginGuard } from "src/auth/guards/first-login.guard";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
-import { Roles } from "src/auth/decorators/roles.decorator";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { FirstLoginGuard } from "../auth/guards/first-login.guard";
+import { WorkerRole } from "../worker/types/enums/role.enum";
+import { Roles } from "../auth/decorators/roles.decorator";
 import { SetupDTO } from "./types/dto/setup.dto";
-import { RolesGuard } from "src/auth/guards/roles.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller("/restaurant")
 export class RestaurantController {

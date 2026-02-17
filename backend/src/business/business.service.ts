@@ -3,12 +3,12 @@ import { BusinessRepository } from "./business.repository";
 import { Business } from "./business.schema";
 import { BusinessReturn } from "./types/interfaces/return.interface";
 import { BusinessDTO } from "./types/dto/business.dto";
-import { OrderType } from "src/order/types/enums/type.enum";
-import { PaymentMethod } from "src/order/types/enums/payment-method.enum";
-import { Origin } from "src/order/types/enums/origin.enum";
-import { ItemCategory } from "src/order/types/enums/item-category.enum";
+import { OrderType } from "../order/types/enums/type.enum";
+import { PaymentMethod } from "../order/types/enums/payment-method.enum";
+import { Origin } from "../order/types/enums/origin.enum";
+import { ItemCategory } from "../order/types/enums/item-category.enum";
 import { WeekDay } from "./types/enums/week-day.enum";
-import { NotificationsGateway } from "src/notifications/notifications.gateway";
+import { NotificationsGateway } from "../notifications/notifications.gateway";
 
 @Injectable()
 export class BusinessService {

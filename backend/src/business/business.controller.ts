@@ -9,13 +9,13 @@ import {
 } from "@nestjs/common";
 import { BusinessService } from "./business.service";
 import { WeekDay } from "./types/enums/week-day.enum";
-import { PaymentMethod } from "src/order/types/enums/payment-method.enum";
-import { Origin } from "src/order/types/enums/origin.enum";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { PaymentMethod } from "../order/types/enums/payment-method.enum";
+import { Origin } from "../order/types/enums/origin.enum";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import type { Request } from "express";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
-import { RolesGuard } from "src/auth/guards/roles.guard";
-import { Roles } from "src/auth/decorators/roles.decorator";
+import { WorkerRole } from "../worker/types/enums/role.enum";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { Roles } from "../auth/decorators/roles.decorator";
 
 @Controller("/business")
 export class BusinessController {

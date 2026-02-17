@@ -5,11 +5,11 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { Order } from "src/order/order.schema";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
+import { Order } from "../order/order.schema";
+import { WorkerRole } from "../worker/types/enums/role.enum";
 import { NotificationEvent } from "./types/enums/notification-event.enum";
 import { NotificationData } from "./types/interfaces/notification-data.interface";
-import { CreateOrderDto } from "src/order/types/dto/create-order.dto";
+import { CreateOrderDto } from "../order/types/dto/create-order.dto";
 
 @WebSocketGateway({
   cors: {

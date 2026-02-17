@@ -1,9 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { OrderItem } from "src/order/types/interfaces/item.interface";
 import { WeekDay } from "./types/enums/week-day.enum";
 import { ItemsDenormalized } from "./types/interfaces/items-denormalized.interface";
-import { Origin } from "src/order/types/enums/origin.enum";
-import { OrderType } from "src/order/types/enums/type.enum";
+import { Origin } from "../order/types/enums/origin.enum";
+import { OrderType } from "../order/types/enums/type.enum";
 import mongoose from "mongoose";
 
 @Schema()

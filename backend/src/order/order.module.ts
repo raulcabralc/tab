@@ -4,9 +4,9 @@ import { OrderSchema } from "./order.schema";
 import { OrderService } from "./order.service";
 import { OrderRepository } from "./order.repository";
 import { OrderController } from "./order.controller";
-import { BusinessModule } from "src/business/business.module";
-import { WorkerModule } from "src/worker/worker.module";
-import { NotificationsModule } from "src/notifications/notifications.module";
+import { BusinessModule } from "../business/business.module";
+import { WorkerModule } from "../worker/worker.module";
+import { NotificationsModule } from "../notifications/notifications.module";
 
 @Module({
   imports: [

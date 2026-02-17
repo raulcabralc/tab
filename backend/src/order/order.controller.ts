@@ -14,11 +14,11 @@ import { CreateOrderDto } from "./types/dto/create-order.dto";
 import { OrderService } from "./order.service";
 import { OrderPriority } from "./types/enums/priority.enum";
 import { OrderStatus } from "./types/enums/status.enum";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import type { Request } from "express";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { WorkerRole } from "src/worker/types/enums/role.enum";
-import { RolesGuard } from "src/auth/guards/roles.guard";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { WorkerRole } from "../worker/types/enums/role.enum";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller("/order")
 export class OrderController {
