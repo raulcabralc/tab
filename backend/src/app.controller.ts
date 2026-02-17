@@ -7,10 +7,10 @@ export class AppController {
   constructor(@InjectConnection() private readonly db: Connection) {}
 
   @Get("/")
-  home(): any {
+  async home(): Promise<any> {
     return {
       health: this.health().status,
-      mongo: this.mongo().mongoStatus,
+      mongo: await this.mongo(),
     };
   }
 
@@ -20,8 +20,28 @@ export class AppController {
   }
 
   @Get("/mongo")
-  mongo(): any {
+  async mongo(): Promise<any> {
+    if (this.db.readyState === 2) {
+      await this.waitForConnection(2000);
+    }
+
     const isConnected = this.db.readyState === 1;
     return { mongoStatus: isConnected ? "ok" : "error" };
+  }
+
+  ///
+
+  private waitForConnection(timeout: number): Promise<void> {
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const check = () => {
+        if (this.db.readyState === 1 || Date.now() - start > timeout) {
+          resolve();
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
   }
 }
