@@ -93,7 +93,7 @@ export class MailService {
       });
 
       const { data, error } = await this.resend.emails.send({
-        from: "TAB App <onboarding@resend.dev>",
+        from: "TAB App <tab@raulc.dev>",
         to: [email],
         subject: "Bem-vindo(a) ao TAB! Seu acesso chegou.",
         html: content,
