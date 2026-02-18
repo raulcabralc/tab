@@ -4,7 +4,7 @@ import { WorkerService } from "../worker/worker.service";
 import * as bcrypt from "bcrypt";
 import { Worker } from "../worker/worker.schema";
 import { randomBytes } from "crypto";
-import { MailService } from "src/mail/mail.service";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class AuthService {
