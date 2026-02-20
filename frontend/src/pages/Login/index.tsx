@@ -81,8 +81,6 @@ export function Login() {
           isFirstLogin,
         });
       } catch (error) {
-        console.error("Erro no login", error);
-
         setModalConfig({
           isOpen: true,
           type: "error",
@@ -195,13 +193,15 @@ export function Login() {
               const isFirst = modalConfig.isFirstLogin;
               setModalConfig(null);
 
-              if (modalConfig.type === "success") {
-                if (isFirst) {
-                  navigate("/update-password");
-                } else {
-                  navigate("/");
+              setTimeout(() => {
+                if (modalConfig.type === "success") {
+                  if (isFirst) {
+                    navigate("/update-password");
+                  } else {
+                    navigate("/");
+                  }
                 }
-              }
+              }, 300);
             }}
           />
         )}
