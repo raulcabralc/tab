@@ -17,3 +17,7 @@ export const black = {
   default: "#181818",
   dark: "#0A0A0A",
 };
+
+export const error = "#F25F4C";
+
+export const success = "#4CAF50";

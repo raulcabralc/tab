@@ -23,7 +23,7 @@ import { roleConversion } from "@/helpers/roleConversion";
 import { formatDate } from "@/helpers/formatDate";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const overlayVariants = {
+export const overlayVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -40,7 +40,7 @@ const overlayVariants = {
   },
 };
 
-const modalVariants = {
+export const modalVariants = {
   hidden: {
     opacity: 0,
     y: 50,
