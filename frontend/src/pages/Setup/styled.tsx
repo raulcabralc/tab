@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
 export const LoginTextArea = styled.textarea<{ $hasError?: boolean }>`
@@ -40,15 +41,16 @@ export const CharCounter = styled.span`
   margin-right: 5px;
 `;
 
-export const ReturnArrow = styled.div`
-  position: absolute;
+export const ReturnArrow = styled(motion.div)`
+  position: sticky;
   cursor: pointer;
   background: ${(props) => props.theme.sidebarBackground};
   border-radius: 50%;
   display: flex;
-  align-content: center;
+  align-items: center;
   padding: 4px;
   z-index: 10;
+  opacity: 0.9;
 
   svg {
     transition: all 0.1s ease-in-out;

@@ -34,6 +34,7 @@ import api from "@/services/api";
 import { CharCounter, LoginTextArea, ReturnArrow } from "@/pages/Setup/styled";
 import { StatusModal } from "@/components/StatusModal";
 import { Spinner } from "@/components/Spinner";
+import { motion } from "framer-motion";
 
 interface Address {
   zip: string;
@@ -42,6 +43,23 @@ interface Address {
   neighborhood: string;
   city: string;
 }
+
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 100 : -100,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    zIndex: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 100 : -100,
+    opacity: 0,
+    zIndex: 0,
+  }),
+};
 
 export function Setup() {
   useEffect(() => {
@@ -104,6 +122,8 @@ export function Setup() {
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  const [direction, setDirection] = useState(0);
+
   const navigate = useNavigate();
 
   const handleSaveAddress = (addressData: Address) => {
@@ -139,6 +159,7 @@ export function Setup() {
         isPasswordValid;
 
       if (isStep1Valid) {
+        setDirection(1);
         setStep(2);
       }
     } else if (step === 2) {
@@ -153,6 +174,7 @@ export function Setup() {
       setRestaurantDescriptionError(!isRestaurantDescriptionValid);
 
       if (isRestaurantNameValid && isRestaurantDescriptionValid) {
+        setDirection(1);
         setStep(3);
       }
     } else if (step === 3) {
@@ -317,319 +339,345 @@ export function Setup() {
   };
 
   const returnStep = () => {
+    setDirection(-1);
     setStep(step - 1);
   };
-
-  const returnableSteps = step === 2 || step === 3;
 
   return (
     <LoginContainer>
       <LoginCard onKeyDown={handleKeyDown}>
-        {returnableSteps && (
-          <ReturnArrow onClick={returnStep}>
-            <ArrowLeft size={32} />
-          </ReturnArrow>
-        )}
-        <LoginLogoContainer src={Logo} />
-
-        <Stepper step={step} />
-
-        <LoginHeader>
-          {step === 1
-            ? "Crie sua conta"
-            : step === 2
-              ? "Sobre o Restaurante"
-              : "Contato e Localização"}
-        </LoginHeader>
-        <LoginDescription>
-          {step === 1
-            ? "Primeiro, configure seu perfil de administrador"
-            : step === 2
-              ? "Agora, conte-nos sobre o seu estabelecimento"
-              : "Por fim, como os clientes e fornecedores podem encontrar o seu estabelecimento?"}
-        </LoginDescription>
-
-        <LoginFields>
-          {step === 1 ? (
-            <>
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "fullName"}
-                  $isFloating={
-                    focusedField === "fullName" || fullName.length > 0
-                  }
-                  $hasError={fullNameError}
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            className="motion-div"
+            key={step}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 500, damping: 40 },
+              opacity: { duration: 0.2 },
+            }}
+            style={{ width: "100%" }}
+          >
+            {step > 1 && (
+              <AnimatePresence>
+                <ReturnArrow
+                  onClick={returnStep}
+                  initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, x: -10 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  Nome Completo
-                </FloatingLabel>
-                <LoginInput
-                  value={fullName}
-                  onChange={(e) => {
-                    setFullName(e.target.value);
-                    setFullNameError(false);
-                  }}
-                  onFocus={() => setFocusedField("fullName")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={fullNameError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={fullNameError}>
-                Nome completo deve ter pelo menos 3 caracteres
-              </ErrorMessage>
+                  <ArrowLeft size={32} />
+                </ReturnArrow>
+              </AnimatePresence>
+            )}
+            <LoginLogoContainer src={Logo} />
 
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "displayName"}
-                  $isFloating={
-                    focusedField === "displayName" || displayName.length > 0
-                  }
-                  $hasError={displayNameError}
-                >
-                  Nome de Exibição
-                </FloatingLabel>
-                <LoginInput
-                  value={displayName}
-                  onChange={(e) => {
-                    setDisplayName(e.target.value);
-                    setDisplayNameError(false);
-                  }}
-                  onFocus={() => setFocusedField("displayName")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={displayNameError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={displayNameError}>
-                Nome de exibição deve ter pelo menos 3 caracteres
-              </ErrorMessage>
+            <Stepper step={step} />
 
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "email"}
-                  $isFloating={focusedField === "email" || email.length > 0}
-                  $hasError={emailError}
-                >
-                  E-mail
-                </FloatingLabel>
-                <LoginInput
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailError(false);
-                  }}
-                  onFocus={() => setFocusedField("email")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={emailError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={emailError}>
-                {emailErrorReason || "E-mail inválido"}
-              </ErrorMessage>
+            <LoginHeader>
+              {step === 1
+                ? "Crie sua conta"
+                : step === 2
+                  ? "Sobre o Restaurante"
+                  : "Contato e Localização"}
+            </LoginHeader>
+            <LoginDescription>
+              {step === 1
+                ? "Primeiro, configure seu perfil de administrador"
+                : step === 2
+                  ? "Agora, conte-nos sobre o seu estabelecimento"
+                  : "Por fim, como os clientes e fornecedores podem encontrar o seu estabelecimento?"}
+            </LoginDescription>
 
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "pass"}
-                  $isFloating={focusedField === "pass" || password.length > 0}
-                  $hasError={passwordError}
-                >
-                  Senha
-                </FloatingLabel>
-                <LoginInput
-                  type="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setPasswordError(false);
-                  }}
-                  onFocus={() => setFocusedField("pass")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={passwordError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={passwordError}>
-                Senha deve ter pelo menos 4 caracteres
-              </ErrorMessage>
-            </>
-          ) : step === 2 ? (
-            <>
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "restaurantName"}
-                  $isFloating={
-                    focusedField === "restaurantName" ||
-                    restaurantName.length > 0
-                  }
-                  $hasError={restaurantNameError}
-                >
-                  Nome do Restaurante
-                </FloatingLabel>
-                <LoginInput
-                  value={restaurantName}
-                  onChange={(e) => {
-                    setRestaurantName(e.target.value);
-                    setRestaurantNameError(false);
-                  }}
-                  onFocus={() => setFocusedField("restaurantName")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={restaurantNameError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={restaurantNameError}>
-                Nome do restaurante deve ter pelo menos 3 caracteres
-              </ErrorMessage>
+            <LoginFields>
+              {step === 1 ? (
+                <>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "fullName"}
+                      $isFloating={
+                        focusedField === "fullName" || fullName.length > 0
+                      }
+                      $hasError={fullNameError}
+                    >
+                      Nome Completo
+                    </FloatingLabel>
+                    <LoginInput
+                      value={fullName}
+                      onChange={(e) => {
+                        setFullName(e.target.value);
+                        setFullNameError(false);
+                      }}
+                      onFocus={() => setFocusedField("fullName")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={fullNameError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={fullNameError}>
+                    Nome completo deve ter pelo menos 3 caracteres
+                  </ErrorMessage>
 
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "restaurantDescription"}
-                  $isFloating={
-                    focusedField === "restaurantDescription" ||
-                    restaurantDescription.length > 0
-                  }
-                  $hasError={restaurantEmailError}
-                >
-                  Descrição do Restaurante
-                </FloatingLabel>
-                <LoginTextArea
-                  value={restaurantDescription}
-                  onChange={(e) => {
-                    setRestaurantDescription(e.target.value);
-                    setRestaurantDescriptionError(false);
-                  }}
-                  onFocus={() => setFocusedField("restaurantDescription")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={restaurantDescriptionError}
-                  maxLength={200}
-                />
-              </InputGroup>
-              <CharCounter>{restaurantDescription.length}/200</CharCounter>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "displayName"}
+                      $isFloating={
+                        focusedField === "displayName" || displayName.length > 0
+                      }
+                      $hasError={displayNameError}
+                    >
+                      Nome de Exibição
+                    </FloatingLabel>
+                    <LoginInput
+                      value={displayName}
+                      onChange={(e) => {
+                        setDisplayName(e.target.value);
+                        setDisplayNameError(false);
+                      }}
+                      onFocus={() => setFocusedField("displayName")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={displayNameError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={displayNameError}>
+                    Nome de exibição deve ter pelo menos 3 caracteres
+                  </ErrorMessage>
 
-              <ErrorMessage $isAppearing={restaurantDescriptionError}>
-                Descrição deve ter pelo menos 3 caracteres
-              </ErrorMessage>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "email"}
+                      $isFloating={focusedField === "email" || email.length > 0}
+                      $hasError={emailError}
+                    >
+                      E-mail
+                    </FloatingLabel>
+                    <LoginInput
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setEmailError(false);
+                      }}
+                      onFocus={() => setFocusedField("email")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={emailError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={emailError}>
+                    {emailErrorReason || "E-mail inválido"}
+                  </ErrorMessage>
 
-              <UploadContainer>
-                <HiddenInput
-                  type="file"
-                  ref={fileInputRef}
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-                <ImageCircle onClick={handleCircleClick}>
-                  <ImagePreview $url={previewImage}>
-                    {!previewImage && <Camera size={32} opacity={0.5} />}
-                  </ImagePreview>
-                </ImageCircle>
-              </UploadContainer>
-            </>
-          ) : (
-            <>
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "restaurantEmail"}
-                  $isFloating={
-                    focusedField === "restaurantEmail" ||
-                    restaurantEmail.length > 0
-                  }
-                  $hasError={restaurantEmailError}
-                >
-                  E-mail do Restaurante
-                </FloatingLabel>
-                <LoginInput
-                  value={restaurantEmail}
-                  onChange={(e) => {
-                    setRestaurantEmail(e.target.value);
-                    setRestaurantEmailError(false);
-                  }}
-                  onFocus={() => setFocusedField("restaurantEmail")}
-                  onBlur={() => setFocusedField(null)}
-                  $hasError={restaurantEmailError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={restaurantEmailError}>
-                {restaurantEmailErrorReason || "E-mail inválido"}
-              </ErrorMessage>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "pass"}
+                      $isFloating={
+                        focusedField === "pass" || password.length > 0
+                      }
+                      $hasError={passwordError}
+                    >
+                      Senha
+                    </FloatingLabel>
+                    <LoginInput
+                      type="password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setPasswordError(false);
+                      }}
+                      onFocus={() => setFocusedField("pass")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={passwordError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={passwordError}>
+                    Senha deve ter pelo menos 4 caracteres
+                  </ErrorMessage>
+                </>
+              ) : step === 2 ? (
+                <>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "restaurantName"}
+                      $isFloating={
+                        focusedField === "restaurantName" ||
+                        restaurantName.length > 0
+                      }
+                      $hasError={restaurantNameError}
+                    >
+                      Nome do Restaurante
+                    </FloatingLabel>
+                    <LoginInput
+                      value={restaurantName}
+                      onChange={(e) => {
+                        setRestaurantName(e.target.value);
+                        setRestaurantNameError(false);
+                      }}
+                      onFocus={() => setFocusedField("restaurantName")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={restaurantNameError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={restaurantNameError}>
+                    Nome do restaurante deve ter pelo menos 3 caracteres
+                  </ErrorMessage>
 
-              <InputGroup>
-                <FloatingLabel
-                  $isFocused={focusedField === "restaurantPhone"}
-                  $isFloating={
-                    focusedField === "restaurantPhone" ||
-                    restaurantPhone.length > 0
-                  }
-                  $hasError={restaurantPhoneError}
-                >
-                  Telefone do Restaurante
-                </FloatingLabel>
-                <LoginInput
-                  value={restaurantPhone}
-                  onChange={(e) => {
-                    const maskedValue = maskPhone(e.target.value);
-                    setRestaurantPhone(maskedValue);
-                    setRestaurantPhoneError(false);
-                  }}
-                  onFocus={() => setFocusedField("restaurantPhone")}
-                  onBlur={() => setFocusedField(null)}
-                  maxLength={15}
-                  $hasError={restaurantPhoneError}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={restaurantPhoneError}>
-                {restaurantPhoneErrorReason || "Número de telefone inválido"}
-              </ErrorMessage>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "restaurantDescription"}
+                      $isFloating={
+                        focusedField === "restaurantDescription" ||
+                        restaurantDescription.length > 0
+                      }
+                      $hasError={restaurantDescriptionError}
+                    >
+                      Descrição do Restaurante
+                    </FloatingLabel>
+                    <LoginTextArea
+                      value={restaurantDescription}
+                      onChange={(e) => {
+                        setRestaurantDescription(e.target.value);
+                        setRestaurantDescriptionError(false);
+                      }}
+                      onFocus={() => setFocusedField("restaurantDescription")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={restaurantDescriptionError}
+                      maxLength={200}
+                    />
+                  </InputGroup>
+                  <CharCounter>{restaurantDescription.length}/200</CharCounter>
+                  <ErrorMessage $isAppearing={restaurantDescriptionError}>
+                    Descrição deve ter pelo menos 3 caracteres
+                  </ErrorMessage>
 
-              <InputGroup
-                onClick={() => {
-                  setIsAddressModalOpen(true);
-                }}
-              >
-                <FloatingLabel
-                  $isFocused={focusedField === "address"}
-                  $isFloating={
-                    addressPreview.length > 0 || focusedField === "address"
-                  }
-                  $hasError={restaurantAddressError}
-                >
-                  {addressPreview.length > 0
-                    ? "Endereço do Estabelecimento"
-                    : "Clique para configurar o endereço"}
-                </FloatingLabel>
-                <LoginInput
-                  readOnly
-                  value={addressPreview}
-                  $hasError={restaurantAddressError}
-                  style={{ cursor: "pointer" }}
-                  $isDotted={true}
-                />
-              </InputGroup>
-              <ErrorMessage $isAppearing={restaurantAddressError}>
-                Endereço inválido
-              </ErrorMessage>
-            </>
-          )}
-        </LoginFields>
+                  <UploadContainer>
+                    <HiddenInput
+                      type="file"
+                      ref={fileInputRef}
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    <ImageCircle onClick={handleCircleClick}>
+                      <ImagePreview $url={previewImage}>
+                        {!previewImage && <Camera size={32} opacity={0.5} />}
+                      </ImagePreview>
+                    </ImageCircle>
+                  </UploadContainer>
+                </>
+              ) : (
+                <>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "restaurantEmail"}
+                      $isFloating={
+                        focusedField === "restaurantEmail" ||
+                        restaurantEmail.length > 0
+                      }
+                      $hasError={restaurantEmailError}
+                    >
+                      E-mail do Restaurante
+                    </FloatingLabel>
+                    <LoginInput
+                      value={restaurantEmail}
+                      onChange={(e) => {
+                        setRestaurantEmail(e.target.value);
+                        setRestaurantEmailError(false);
+                      }}
+                      onFocus={() => setFocusedField("restaurantEmail")}
+                      onBlur={() => setFocusedField(null)}
+                      $hasError={restaurantEmailError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={restaurantEmailError}>
+                    {restaurantEmailErrorReason || "E-mail inválido"}
+                  </ErrorMessage>
 
-        <LoginButton onClick={handleNextStep} disabled={isLoading}>
-          {step === 1 || step === 2 ? (
-            "Próximo passo"
-          ) : isLoading ? (
-            <Spinner />
-          ) : (
-            "Finalizar Cadastro"
-          )}
-        </LoginButton>
+                  <InputGroup>
+                    <FloatingLabel
+                      $isFocused={focusedField === "restaurantPhone"}
+                      $isFloating={
+                        focusedField === "restaurantPhone" ||
+                        restaurantPhone.length > 0
+                      }
+                      $hasError={restaurantPhoneError}
+                    >
+                      Telefone do Restaurante
+                    </FloatingLabel>
+                    <LoginInput
+                      value={restaurantPhone}
+                      onChange={(e) => {
+                        const maskedValue = maskPhone(e.target.value);
+                        setRestaurantPhone(maskedValue);
+                        setRestaurantPhoneError(false);
+                      }}
+                      onFocus={() => setFocusedField("restaurantPhone")}
+                      onBlur={() => setFocusedField(null)}
+                      maxLength={15}
+                      $hasError={restaurantPhoneError}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={restaurantPhoneError}>
+                    {restaurantPhoneErrorReason ||
+                      "Número de telefone inválido"}
+                  </ErrorMessage>
 
-        <LoginThemeToggleContainer>
-          <Moon size={20} />
-          <ThemeSwitch />
-        </LoginThemeToggleContainer>
+                  <InputGroup
+                    onClick={() => {
+                      setIsAddressModalOpen(true);
+                    }}
+                  >
+                    <FloatingLabel
+                      $isFocused={focusedField === "address"}
+                      $isFloating={
+                        addressPreview.length > 0 || focusedField === "address"
+                      }
+                      $hasError={restaurantAddressError}
+                    >
+                      {addressPreview.length > 0
+                        ? "Endereço do Estabelecimento"
+                        : "Clique para configurar o endereço"}
+                    </FloatingLabel>
+                    <LoginInput
+                      readOnly
+                      value={addressPreview}
+                      $hasError={restaurantAddressError}
+                      style={{ cursor: "pointer" }}
+                      $isDotted={true}
+                    />
+                  </InputGroup>
+                  <ErrorMessage $isAppearing={restaurantAddressError}>
+                    Endereço inválido
+                  </ErrorMessage>
+                </>
+              )}
+            </LoginFields>
 
-        {step === 1 && (
-          <>
-            <RegisterText>Já possui uma conta?</RegisterText>
-            <ForgotPasswordLink $register={true} to="/login">
-              Fazer login
-            </ForgotPasswordLink>
-          </>
-        )}
+            <LoginButton onClick={handleNextStep} disabled={isLoading}>
+              {step === 1 || step === 2 ? (
+                "Próximo passo"
+              ) : isLoading ? (
+                <Spinner />
+              ) : (
+                "Finalizar Cadastro"
+              )}
+            </LoginButton>
+
+            <LoginThemeToggleContainer>
+              <Moon size={20} />
+              <ThemeSwitch />
+            </LoginThemeToggleContainer>
+
+            {step === 1 && (
+              <>
+                <RegisterText>Já possui uma conta?</RegisterText>
+                <ForgotPasswordLink $register={true} to="/login">
+                  Fazer login
+                </ForgotPasswordLink>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </LoginCard>
 
       <AnimatePresence>

@@ -40,7 +40,28 @@ export const LoginCard = styled.div`
     border-radius: 0;
     height: auto;
     overflow-y: auto;
-    overflow-x: visible;
+    overflow-x: hidden;
+  }
+
+  .motion-div {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: auto;
+    gap: 16px;
+    width: 90%;
+    max-width: 450px;
+    min-height: 900px;
+    overflow-x: hidden;
+
+    @media (max-width: 478px) {
+      width: 100vw;
+      min-height: 100vh;
+      max-width: 500px;
+      border-radius: 0;
+      height: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
   }
 `;
 
@@ -48,6 +69,10 @@ export const LoginHeader = styled.h1`
   color: ${(props) => props.theme.primary};
   font-size: 3rem;
   text-align: center;
+
+  @media (max-width: 376px) {
+    font-size: 2.8rem;
+  }
 `;
 
 export const LoginDescription = styled.p`
