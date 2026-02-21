@@ -6,13 +6,11 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarLogo,
-  Switch,
   ThemeToggleArea,
   UserCard,
   UserImage,
 } from "./styled";
-
-import { useTheme } from "../../contexts/ThemeContext";
+import { ThemeSwitch } from "../ThemeSwitch";
 
 import logo from "../../assets/logo.png";
 import { useState } from "react";
@@ -31,8 +29,6 @@ import { userMock } from "@/user-mock";
 
 function Sidebar() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <SidebarContainer>
@@ -69,14 +65,7 @@ function Sidebar() {
 
       <ThemeToggleArea>
         <span>Modo Escuro</span>
-        <Switch>
-          <input
-            type="checkbox"
-            onChange={toggleTheme}
-            checked={theme === "dark"}
-          />
-          <span />
-        </Switch>
+        <ThemeSwitch />
       </ThemeToggleArea>
 
       <SidebarFooter>

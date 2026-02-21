@@ -6,13 +6,14 @@ import Team from "./pages/Team";
 import Menu from "./pages/Menu";
 import Analysis from "./pages/Analysis";
 import { Login } from "./pages/Login";
+import { Setup } from "./pages/Setup";
 
 function Router() {
   return (
     <>
       <Routes>
         <Route path="/login" element={<Login />}></Route>
-        <Route path="/register" element></Route>
+        <Route path="/setup" element={<Setup />}></Route>
         <Route path="/reset-password" element></Route>
         <Route path="/update-password" element></Route>
 

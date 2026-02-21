@@ -24,8 +24,13 @@ import { WorkerRole } from "../../../../backend/src/worker/types/enums/role.enum
 import { restaurantMock } from "@/restaurant-mock";
 import { ordersMock } from "@/orders-mock";
 import { userMock } from "@/user-mock";
+import { useEffect } from "react";
 
 function Dashboard() {
+  useEffect(() => {
+    document.title = "Tab • Dashboard";
+  }, []);
+
   const preparingOrders = ordersMock.filter(
     (order) => order.status === "PREPARING",
   );

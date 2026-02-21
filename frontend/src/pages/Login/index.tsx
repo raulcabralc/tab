@@ -1,4 +1,4 @@
-import { Switch } from "@/components/Sidebar/styled";
+import { ThemeSwitch } from "@/components/ThemeSwitch";
 import {
   ErrorMessage,
   FloatingLabel,
@@ -13,19 +13,21 @@ import {
   LoginInput,
   LoginLogoContainer,
   LoginThemeToggleContainer,
+  RegisterText,
 } from "./styled";
 import { Spinner } from "@/components/Spinner";
-import { useTheme } from "@/contexts/ThemeContext";
 import Logo from "@/assets/logo.png";
 import { ArrowUpRight, Moon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "@/services/api";
 import { StatusModal } from "@/components/StatusModal";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export function Login() {
-  const { theme, toggleTheme } = useTheme();
+  useEffect(() => {
+    document.title = "Tab • Login";
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -104,12 +106,10 @@ export function Login() {
     <LoginContainer>
       <LoginCard>
         <LoginLogoContainer src={Logo} />
-
         <LoginHeader>Login</LoginHeader>
         <LoginDescription>
           Entre no sistema com seu email e senha
         </LoginDescription>
-
         <LoginFields>
           <InputGroup>
             <FloatingLabel
@@ -165,22 +165,18 @@ export function Login() {
             Esqueci minha senha <ArrowUpRight size={15} />
           </ForgotPasswordLink>
         </LoginFields>
-
         <LoginButton onClick={handleLogin} disabled={isLoading}>
           {isLoading ? <Spinner /> : "Entrar"}
         </LoginButton>
-
         <LoginThemeToggleContainer>
           <Moon size={20} />
-          <Switch>
-            <input
-              type="checkbox"
-              onChange={toggleTheme}
-              checked={theme === "dark"}
-            />
-            <span />
-          </Switch>
+          <ThemeSwitch />
         </LoginThemeToggleContainer>
+
+        <RegisterText>Deseja usar o TAB no seu restaurante?</RegisterText>
+        <ForgotPasswordLink $register={true} to="/setup">
+          Cadastre seu estabelecimento
+        </ForgotPasswordLink>
       </LoginCard>
 
       <AnimatePresence>

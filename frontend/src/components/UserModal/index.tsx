@@ -1,10 +1,6 @@
 import { Check, Pen, X } from "lucide-react";
-import {
-  ModalContainer,
-  ModalHeader,
-  ModalOverlay,
-  Switch,
-} from "../Sidebar/styled";
+import { ModalContainer, ModalHeader, ModalOverlay } from "../Sidebar/styled";
+import { ThemeSwitch } from "../ThemeSwitch";
 import {
   Detail,
   DetailName,
@@ -21,7 +17,6 @@ import {
 import { userMock } from "@/user-mock";
 import { roleConversion } from "@/helpers/roleConversion";
 import { formatDate } from "@/helpers/formatDate";
-import { useTheme } from "@/contexts/ThemeContext";
 
 export const overlayVariants = {
   hidden: { opacity: 0 },
@@ -65,8 +60,6 @@ export const modalVariants = {
 };
 
 function UserModal({ onClose }: { onClose: () => void }) {
-  const { theme, toggleTheme } = useTheme();
-
   return (
     <ModalOverlay
       onClick={onClose}
@@ -116,14 +109,7 @@ function UserModal({ onClose }: { onClose: () => void }) {
             </Detail>
             <Detail className="switch">
               <DetailName>Modo Escuro</DetailName>
-              <Switch>
-                <input
-                  type="checkbox"
-                  onChange={toggleTheme}
-                  checked={theme === "dark"}
-                />
-                <span />
-              </Switch>
+              <ThemeSwitch />
             </Detail>
             <Detail>
               <IsActive>

@@ -4,11 +4,10 @@ import { NavLink } from "react-router-dom";
 
 export const LoginContainer = styled.div`
   display: flex;
-  align-items: center;
   align-content: center;
-  justify-content: center;
   height: 100vh;
   width: 100vw;
+  overflow: auto;
 `;
 
 export const LoginLogoContainer = styled.img`
@@ -20,7 +19,8 @@ export const LoginLogoContainer = styled.img`
 
 export const LoginCard = styled.div`
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column nowrap;
+  margin: auto;
   gap: 16px;
   padding: 30px;
   border-radius: 12px;
@@ -31,6 +31,17 @@ export const LoginCard = styled.div`
   transition: all 0.2s ease-in-out;
   width: 90%;
   max-width: 450px;
+  overflow-x: hidden;
+
+  @media (max-width: 478px) {
+    width: 100vw;
+    min-height: 100vh;
+    max-width: 500px;
+    border-radius: 0;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: visible;
+  }
 `;
 
 export const LoginHeader = styled.h1`
@@ -47,7 +58,7 @@ export const LoginDescription = styled.p`
 `;
 
 export const LoginFields = styled.div`
-  padding: 25px 0;
+  padding: 15px 0;
   display: flex;
   flex-flow: column wrap;
   gap: 20px;
@@ -88,12 +99,20 @@ export const FloatingLabel = styled.label<{
   border-radius: 100px;
 `;
 
-export const LoginInput = styled.input<{ $hasError?: boolean }>`
+export const LoginInput = styled.input<{
+  $hasError?: boolean;
+  $isDotted?: boolean;
+}>`
   width: 100%;
   background: ${(props) => props.theme.background};
   border: 1px solid ${(props) => props.theme.sidebarEdge};
+  border-width: ${(props) => (props.$isDotted ? "3px" : "1px")};
+  border-color: ${(props) =>
+    props.$isDotted ? props.theme.sidebarCategory : props.theme.sidebarEdge};
+  border-style: ${(props) => (props.$isDotted ? "dotted" : "solid")};
   outline: none;
-  color: ${(props) => props.theme.text};
+  color: ${(props) =>
+    props.$isDotted ? props.theme.sidebarCategory : props.theme.text};
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -103,20 +122,32 @@ export const LoginInput = styled.input<{ $hasError?: boolean }>`
     system-ui,
     -apple-system,
     sans-serif;
-  font-size: 1rem;
+  font-size: ${(props) => (props.$isDotted ? "0.8rem" : "1rem")};
   transition: all 0.15s ease-in-out;
-  border-color: ${(props) =>
-    props.$hasError ? "#ff4d4d" : props.theme.sidebarEdge};
+  border-color: ${(props) => (props.$hasError ? "#ff4d4d" : "normal")};
+  caret-color: ${(props) => (props.$isDotted ? "transparent" : "normal")};
+  text-overflow: ellipsis;
 
   &:focus {
     border-color: ${(props) =>
-      props.$hasError ? "#ff4d4d" : props.theme.primary};
-    background: ${(props) => props.theme.sidebarBackground};
+      props.$hasError
+        ? "#ff4d4d"
+        : props.$isDotted
+          ? "normal"
+          : props.theme.primary};
+    background: ${(props) =>
+      props.$isDotted ? props.theme.background : props.theme.sidebarBackground};
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  &:disabled {
+    filter: brightness(0.85);
+    user-select: none;
   }
 `;
 
 export const ErrorMessage = styled.span<{ $isAppearing: boolean }>`
+  cursor: default;
   opacity: ${(props) => (props.$isAppearing ? 1 : 0)};
   transform: ${(props) =>
     props.$isAppearing ? "translateY(0px)" : "translateY(-12px)"};
@@ -127,16 +158,18 @@ export const ErrorMessage = styled.span<{ $isAppearing: boolean }>`
   transition: all 0.3s ease-in-out;
 `;
 
-export const ForgotPasswordLink = styled(NavLink)`
+export const ForgotPasswordLink = styled(NavLink)<{ $register?: boolean }>`
   display: flex;
   gap: 3px;
-  align-self: flex-end;
-  font-size: 0.85rem;
+  align-self: ${(props) => (props.$register ? "center" : "flex-end")};
+  font-size: ${(props) => (props.$register ? "0.95rem" : "0.85rem")};
   color: ${(props) => props.theme.primary};
   text-decoration: none;
   margin-top: -10px;
   filter: brightness(0.8);
   transition: filter 0.2s;
+  text-align: ${(props) => (props.$register ? "center" : "inherit")};
+  flex-flow: ${(props) => (props.$register ? "row wrap" : "inherit inherit")};
 
   &:hover {
     filter: brightness(1.2);
@@ -190,4 +223,12 @@ export const LoginThemeToggleContainer = styled.div`
   font-size: 0.8rem;
   font-weight: 600;
   color: ${(props) => props.theme.sidebarCategory};
+`;
+
+export const RegisterText = styled.p`
+  color: ${(props) => props.theme.text};
+  font-size: 0.8rem;
+  text-align: center;
+  filter: opacity(0.4);
+  margin-top: 10px;
 `;
