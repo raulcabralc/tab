@@ -1,4 +1,4 @@
-import { Check, X, AlertCircle } from "lucide-react";
+import { Check, X, AlertTriangle, LucideX } from "lucide-react";
 import { ModalOverlay, ModalContainer, ModalHeader } from "../Sidebar/styled";
 import { XButton } from "../UserModal/styled";
 import {
@@ -11,7 +11,7 @@ import {
 import { modalVariants, overlayVariants } from "../UserModal";
 
 interface StatusModalProps {
-  type: "success" | "error";
+  type: "success" | "error" | "warning";
   title: string;
   message: string;
   onClose: () => void;
@@ -46,8 +46,10 @@ export function StatusModal({
           <StatusIconContainer $type={type}>
             {type === "success" ? (
               <Check size={40} />
+            ) : type === "error" ? (
+              <LucideX size={40} />
             ) : (
-              <AlertCircle size={40} />
+              <AlertTriangle size={40} />
             )}
           </StatusIconContainer>
 
@@ -55,7 +57,11 @@ export function StatusModal({
           <StatusMessage>{message}</StatusMessage>
 
           <ActionButton onClick={onClose}>
-            {type === "success" ? "Continuar" : "Tentar novamente"}
+            {type === "success"
+              ? "Continuar"
+              : type === "error"
+                ? "Tentar novamente"
+                : "Ok"}
           </ActionButton>
         </StatusModalContent>
       </ModalContainer>

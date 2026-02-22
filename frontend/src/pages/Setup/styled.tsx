@@ -42,7 +42,7 @@ export const CharCounter = styled.span`
 `;
 
 export const ReturnArrow = styled(motion.div)`
-  position: sticky;
+  position: absolute;
   cursor: pointer;
   background: ${(props) => props.theme.sidebarBackground};
   border-radius: 50%;

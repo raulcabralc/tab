@@ -7,23 +7,32 @@ import Menu from "./pages/Menu";
 import Analysis from "./pages/Analysis";
 import { Login } from "./pages/Login";
 import { Setup } from "./pages/Setup";
+import { FirstLogin } from "./pages/FirstLogin";
+import { CheckFirstLogin } from "./guards/CheckFirstLogin";
 
 function Router() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/setup" element={<Setup />}></Route>
-        <Route path="/reset-password" element></Route>
-        <Route path="/update-password" element></Route>
+        <Route element={<CheckFirstLogin />}>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/setup" element={<Setup />}></Route>
+          {/* <Route path="/reset-password" element></Route> */}
 
-        <Route element={<DefaultLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/users" element={<Team />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/analysis" element={<Analysis />} />
+          <Route path="/first-login" element={<FirstLogin />} />
+
+          <Route element={<DefaultLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/users" element={<Team />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/analysis" element={<Analysis />} />
+          </Route>
+
+          <Route path="*" element={<h1>Teste!</h1>} />
         </Route>
+
+        <Route path="*" element={<h1>Teste!</h1>} />
       </Routes>
     </>
   );

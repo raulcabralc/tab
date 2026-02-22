@@ -145,7 +145,7 @@ export function Setup() {
       const isFullNameValid = fullName.length > 2;
       const isDisplayNameValid = displayName.length > 2;
       const isEmailValid = validateEmail(email);
-      const isPasswordValid = password.length >= 4;
+      const isPasswordValid = password.length >= 6;
 
       setFullNameError(!isFullNameValid);
       setDisplayNameError(!isDisplayNameValid);
@@ -492,7 +492,7 @@ export function Setup() {
                     />
                   </InputGroup>
                   <ErrorMessage $isAppearing={passwordError}>
-                    Senha deve ter pelo menos 4 caracteres
+                    Senha deve ter pelo menos 6 caracteres
                   </ErrorMessage>
                 </>
               ) : step === 2 ? (

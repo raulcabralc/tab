@@ -22,11 +22,35 @@ import React, { useEffect, useState } from "react";
 import api from "@/services/api";
 import { StatusModal } from "@/components/StatusModal";
 import { AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function Login() {
+  const location = useLocation();
+
   useEffect(() => {
     document.title = "Tab • Login";
+
+    if (location.state?.showNoUserLoggedAlert) {
+      setModalConfig({
+        isOpen: true,
+        type: "warning",
+        title: "Login necessário",
+        message: "É preciso fazer login para usar o TAB.",
+      });
+
+      window.history.replaceState({}, document.title);
+    }
+
+    if (location.state?.showUnexpectedLoginAlert) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Ops!",
+        message: "Aconteceu um erro inesperado.",
+      });
+
+      window.history.replaceState({}, document.title);
+    }
   }, []);
 
   const [email, setEmail] = useState("");
@@ -42,10 +66,10 @@ export function Login() {
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
-    type: "success" | "error";
+    type: "success" | "error" | "warning";
     title: string;
     message: string;
-    isFirstLogin: boolean;
+    isFirstLogin?: boolean;
   } | null>(null);
 
   const navigate = useNavigate();
@@ -57,7 +81,7 @@ export function Login() {
 
   const handleLogin = async () => {
     const isEmailValid = validateEmail(email);
-    const isPasswordValid = password.length >= 4;
+    const isPasswordValid = password.length >= 6;
 
     setEmailError(!isEmailValid);
     setPasswordError(!isPasswordValid);
@@ -158,7 +182,7 @@ export function Login() {
             />
           </InputGroup>
           <ErrorMessage $isAppearing={passwordError}>
-            Senha deve ter pelo menos 4 caracteres
+            Senha deve ter pelo menos 6 caracteres
           </ErrorMessage>
 
           <ForgotPasswordLink to="/forgot-password">

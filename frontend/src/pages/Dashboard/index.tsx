@@ -24,12 +24,46 @@ import { WorkerRole } from "../../../../backend/src/worker/types/enums/role.enum
 import { restaurantMock } from "@/restaurant-mock";
 import { ordersMock } from "@/orders-mock";
 import { userMock } from "@/user-mock";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { StatusModal } from "@/components/StatusModal";
+import { useLocation } from "react-router-dom";
 
 function Dashboard() {
+  const location = useLocation();
+
   useEffect(() => {
     document.title = "Tab • Dashboard";
+
+    if (location.state?.showNotFirstLoginAnymoreAlert) {
+      setModalConfig({
+        isOpen: true,
+        type: "warning",
+        title: "Senha já atualizada!",
+        message: "Você já atualizou a senha da sua conta.",
+      });
+
+      window.history.replaceState({}, document.title);
+    }
+
+    if (location.state?.showAlreadyLoggedInAlert) {
+      setModalConfig({
+        isOpen: true,
+        type: "warning",
+        title: "Usuário já logado!",
+        message: "Você já está logado no sistema.",
+      });
+
+      window.history.replaceState({}, document.title);
+    }
   }, []);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: "success" | "error" | "warning";
+    title: string;
+    message: string;
+  } | null>(null);
 
   const preparingOrders = ordersMock.filter(
     (order) => order.status === "PREPARING",
@@ -183,6 +217,19 @@ function Dashboard() {
             </Card>
           )}
         </DashboardGrid>
+
+        <AnimatePresence>
+          {modalConfig?.isOpen && (
+            <StatusModal
+              type={modalConfig.type}
+              title={modalConfig.title}
+              message={modalConfig.message}
+              onClose={() => {
+                setModalConfig(null);
+              }}
+            />
+          )}
+        </AnimatePresence>
       </DashboardContainer>
     </>
   );

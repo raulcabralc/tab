@@ -10,7 +10,9 @@ export const StatusModalContent = styled.div`
   gap: 20px;
 `;
 
-export const StatusIconContainer = styled.div<{ $type: "success" | "error" }>`
+export const StatusIconContainer = styled.div<{
+  $type: "success" | "error" | "warning";
+}>`
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -20,12 +22,22 @@ export const StatusIconContainer = styled.div<{ $type: "success" | "error" }>`
   background-color: ${(props) =>
     props.$type === "success"
       ? "rgba(76, 175, 80, 0.1)"
-      : "rgba(242, 95, 76, 0.1)"};
+      : props.$type === "error"
+        ? "rgba(242, 95, 76, 0.1)"
+        : "rgba(242, 198, 76, 0.1)"};
   color: ${(props) =>
-    props.$type === "success" ? color.success : props.theme.primary};
+    props.$type === "success"
+      ? color.success
+      : props.$type === "error"
+        ? props.theme.primary
+        : color.warning};
   border: 2px solid
     ${(props) =>
-      props.$type === "success" ? color.success : props.theme.primary};
+      props.$type === "success"
+        ? color.success
+        : props.$type === "error"
+          ? props.theme.primary
+          : color.warning};
   svg {
     stroke-width: 3px;
   }
