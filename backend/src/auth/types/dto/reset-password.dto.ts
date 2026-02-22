@@ -5,6 +5,6 @@ export class ResetPasswordDTO {
   token: string;
 
   @IsString()
-  @MinLength(4)
+  @MinLength(6)
   pin: string;
 }

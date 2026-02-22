@@ -1,4 +1,10 @@
-import { IsDateString, IsEmail, IsOptional, IsString } from "class-validator";
+import {
+  IsDateString,
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+} from "class-validator";
 import { WorkerRole } from "../enums/role.enum";
 
 export class UpdateWorkerDto {
@@ -21,6 +27,7 @@ export class UpdateWorkerDto {
 
   @IsOptional()
   @IsString()
+  @MinLength(6)
   pin?: string;
 
   @IsOptional()
