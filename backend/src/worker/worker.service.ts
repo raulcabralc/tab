@@ -405,7 +405,7 @@ export class WorkerService {
 
   async forgotPassword(
     email: string,
-    resetToken: string,
+    resetCode: string,
     expires: Date,
   ): Promise<Worker | WorkerReturn> {
     const userExists = await this.strictFindByEmail(email);
@@ -419,17 +419,17 @@ export class WorkerService {
 
     return await this.workerRepository.forgotPassword(
       email,
-      resetToken,
+      resetCode,
       expires,
     );
   }
 
   async resetPassword(
-    token: string,
+    code: string,
     newPin: string,
   ): Promise<Worker | WorkerReturn> {
-    const worker = (await this.workerRepository.findByResetToken(
-      token,
+    const worker = (await this.workerRepository.findByResetCode(
+      code,
     )) as WorkerDocument;
 
     const now = new Date();
@@ -444,7 +444,7 @@ export class WorkerService {
     if (now > worker.resetPasswordExpires) {
       return {
         success: false,
-        message: "Reset token expired.",
+        message: "Reset code expired.",
       };
     }
 

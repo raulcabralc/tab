@@ -51,29 +51,34 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const resetToken = randomBytes(20).toString("hex");
+    const resetCode = this.randomCode();
 
     const expires = new Date();
     expires.setHours(expires.getHours() + 1);
 
     const worker = (await this.workerService.forgotPassword(
       email,
-      resetToken,
+      resetCode,
       expires,
     )) as Worker;
 
     if (worker.email) {
-      const resetLink = `https://tab.raulc.dev/reset-password?token=${resetToken}`;
-
       await this.mailService.sendResetPassword(
         email,
         worker.displayName,
-        resetLink,
+        resetCode,
       );
     }
   }
 
-  async resetPassword(token: string, newPin: string) {
-    return await this.workerService.resetPassword(token, newPin);
+  async resetPassword(code: string, newPin: string) {
+    return await this.workerService.resetPassword(code, newPin);
+  }
+
+  private randomCode() {
+    const code = Math.floor(
+      Math.random() * (999999 - 100000 + 1) + 100000,
+    ).toString();
+    return code;
   }
 }

@@ -168,7 +168,7 @@ export class WorkerRepository {
         email,
       },
       {
-        resetPasswordToken: resetToken,
+        resetPasswordCode: resetToken,
         resetPasswordExpires: expires,
       },
       { new: true },
@@ -184,8 +184,8 @@ export class WorkerRepository {
         restaurantId,
       },
       {
+        resetPasswordCode: null,
         resetPasswordExpires: null,
-        resetPasswordToken: null,
       },
       { new: true },
     );
@@ -209,9 +209,9 @@ export class WorkerRepository {
     return worker as Worker;
   }
 
-  async findByResetToken(token: string): Promise<Worker> {
+  async findByResetCode(code: string): Promise<Worker> {
     const worker = await this.workerModel.findOne({
-      resetPasswordToken: token,
+      resetPasswordCode: code,
     });
 
     return worker as Worker;

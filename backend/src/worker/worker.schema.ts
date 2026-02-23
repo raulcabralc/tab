@@ -42,7 +42,7 @@ export class Worker {
   isFirstLogin: boolean;
 
   @Prop({ required: false })
-  resetPasswordToken?: string;
+  resetPasswordCode?: string;
 
   @Prop({ required: false })
   resetPasswordExpires?: Date;

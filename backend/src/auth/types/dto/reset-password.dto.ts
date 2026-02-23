@@ -2,7 +2,7 @@ import { IsString, MinLength } from "class-validator";
 
 export class ResetPasswordDTO {
   @IsString()
-  token: string;
+  code: string;
 
   @IsString()
   @MinLength(6)

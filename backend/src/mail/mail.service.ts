@@ -97,67 +97,65 @@ export class MailService {
     }
   }
 
-  async sendResetPassword(email: string, name: string, resetLink: string) {
+  async sendResetPassword(email: string, name: string, resetCode: string) {
     const content = `
-      <!DOCTYPE html>
-          <html>
-          <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Recuperação de Senha - TAB</title>
-              <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-          </head>
-          <body style="margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #0a0a0a; color: #ffffff;">
-              <div style="max-width: 600px; margin: 0 auto; background-color: #0a0a0a; border: 1px solid #262626;">
-                  
-                  <div style="padding: 40px 32px; border-bottom: 1px solid #262626; text-align: left;">
-                      <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 28px; font-weight: 700;">
-                          TAB<span style="color: #F25F4C;">.</span>
-                      </h1>
-                      <p style="color: #a3a3a3; margin: 0; font-size: 16px;">Recuperação de acesso à conta.</p>
-                  </div>
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Código de Verificação - TAB</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #0a0a0a; color: #ffffff;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #0a0a0a; border: 1px solid #262626;">
+            
+            <div style="padding: 40px 32px; border-bottom: 1px solid #262626; text-align: left;">
+                <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 28px; font-weight: 700;">
+                    TAB<span style="color: #F25F4C;">.</span>
+                </h1>
+                <p style="color: #a3a3a3; margin: 0; font-size: 16px;">Gestão Inteligente para seu negócio.</p>
+            </div>
 
-                  <div style="padding: 40px 32px;">
-                      <h2 style="margin: 0 0 16px 0; color: #ffffff; font-size: 20px; font-weight: 600;">Olá, ${name}!</h2>
-                      <p style="margin: 0 0 32px 0; color: #a3a3a3; font-size: 15px; line-height: 1.6;">
-                          Recebemos uma solicitação para redefinir a senha da sua conta. Clique no botão abaixo para escolher uma nova senha:
-                      </p>
+            <div style="padding: 40px 32px;">
+                <h2 style="margin: 0 0 16px 0; color: #ffffff; font-size: 20px; font-weight: 600;">Olá, ${name}!</h2>
+                <p style="margin: 0 0 32px 0; color: #a3a3a3; font-size: 15px; line-height: 1.6;">
+                    Você solicitou a redefinição de senha da sua conta. Utilize o código de verificação abaixo para confirmar sua identidade na tela que já está aberta:
+                </p>
 
-                      <div style="text-align: center; margin: 40px 0;">
-                          <a href="${resetLink}" 
-                            style="display: inline-block; background-color: #F25F4C; color: #ffffff; padding: 16px 48px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                              Redefinir Minha Senha
-                          </a>
-                      </div>
+                <div style="text-align: center; margin: 40px 0; background-color: #111111; border: 1px dashed #F25F4C; border-radius: 12px; padding: 32px;">
+                    <span style="display: block; color: #a3a3a3; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">Seu código é</span>
+                    <div style="font-family: 'Courier New', Courier, monospace; font-size: 48px; font-weight: 700; color: #F25F4C; letter-spacing: 12px; margin-left: 12px;">
+                        ${resetCode}
+                    </div>
+                </div>
 
-                      <div style="background-color: #171717; border-radius: 8px; padding: 20px; border: 1px solid #262626;">
-                          <p style="margin: 0; color: #d4d4d4; font-size: 13px; line-height: 1.5;">
-                              <strong>Dica de segurança:</strong> Este link expirará em 1 hora. Se você não solicitou a troca de senha, pode ignorar este e-mail com segurança; sua senha atual permanecerá a mesma.
-                          </p>
-                      </div>
-                  </div>
+                <div style="background-color: #171717; border-radius: 8px; padding: 20px; border: 1px solid #262626;">
+                    <p style="margin: 0; color: #d4d4d4; font-size: 13px; line-height: 1.5;">
+                        <strong>Dica de segurança:</strong> Este código é válido por apenas 15 minutos e não deve ser compartilhado com ninguém. Se você não solicitou esta alteração, ignore este e-mail.
+                    </p>
+                </div>
+            </div>
 
-                  <div style="background-color: #111111; padding: 32px; text-align: center; border-top: 1px solid #262626;">
-                      <p style="margin: 0; color: #525252; font-size: 11px;">
-                          &copy; 2026 TAB Gestão Inteligente. João Pessoa, PB.
-                      </p>
-                  </div>
-              </div>
-          </body>
-          </html>
-    `;
+            <div style="background-color: #050505; padding: 32px; text-align: center; border-top: 1px solid #262626;">
+                <p style="margin: 0; color: #525252; font-size: 11px;">
+                    &copy; 2026 TAB Gestão Inteligente. João Pessoa, PB.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
 
     try {
       await this.resend.emails.send({
         from: "TAB App <tab@raulc.dev>",
         to: [email],
-        subject: "Recuperação de Senha - TAB.",
+        subject: `${resetCode} é o seu código de recuperação TAB.`,
         html: content,
       });
     } catch (e) {
-      console.log(
-        "An unknown error has occured while trying to send the welcome email.",
-      );
+      console.log("An unknown error has occured while trying to send email.");
     }
   }
 }
