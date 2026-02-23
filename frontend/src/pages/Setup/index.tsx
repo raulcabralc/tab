@@ -124,6 +124,8 @@ export function Setup() {
 
   const [direction, setDirection] = useState(0);
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSaveAddress = (addressData: Address) => {
@@ -217,6 +219,8 @@ export function Setup() {
         },
       };
 
+      setButtonDisabled(true);
+
       const response = await api.post("/restaurant/setup", setupData);
 
       if (response.data) {
@@ -283,7 +287,7 @@ export function Setup() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (!buttonDisabled && e.key === "Enter") {
       handleNextStep();
     }
   };
@@ -702,6 +706,8 @@ export function Setup() {
               setTimeout(() => {
                 if (modalConfig.type === "success") {
                   navigate("/");
+                } else if (modalConfig.type === "error") {
+                  setButtonDisabled(false);
                 }
               }, 300);
             }}
