@@ -9,16 +9,19 @@ import { Login } from "./pages/Login";
 import { Setup } from "./pages/Setup";
 import { FirstLogin } from "./pages/FirstLogin";
 import { CheckFirstLogin } from "./guards/CheckFirstLogin";
+import { PublicRoute } from "./guards/PublicRoute";
 
 function Router() {
   return (
     <>
       <Routes>
-        <Route element={<CheckFirstLogin />}>
+        <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/setup" element={<Setup />}></Route>
           {/* <Route path="/reset-password" element></Route> */}
+        </Route>
 
+        <Route element={<CheckFirstLogin />}>
           <Route path="/first-login" element={<FirstLogin />} />
 
           <Route element={<DefaultLayout />}>

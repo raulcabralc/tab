@@ -22,10 +22,11 @@ import React, { useEffect, useState } from "react";
 import api from "@/services/api";
 import { StatusModal } from "@/components/StatusModal";
 import { AnimatePresence } from "framer-motion";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 export function Login() {
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     document.title = "Tab • Login";
@@ -51,7 +52,18 @@ export function Login() {
 
       window.history.replaceState({}, document.title);
     }
-  }, []);
+
+    if (searchParams.get("sessionExpired") === "true") {
+      setModalConfig({
+        isOpen: true,
+        type: "warning",
+        title: "Sessão Expirada",
+        message: "Seu acesso expirou, por favor, faça login novamente.",
+      });
+
+      window.history.replaceState({}, document.title);
+    }
+  }, [searchParams, setSearchParams]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,6 +84,8 @@ export function Login() {
     isFirstLogin?: boolean;
   } | null>(null);
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
@@ -89,6 +103,8 @@ export function Login() {
     if (isEmailValid && isPasswordValid) {
       setIsLoading(true);
       try {
+        setButtonDisabled(true);
+
         const response = await api.post("/auth/login", {
           email,
           pass: password,
@@ -121,7 +137,7 @@ export function Login() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (!buttonDisabled && e.key === "Enter") {
       handleLogin();
     }
   };
@@ -189,7 +205,10 @@ export function Login() {
             Esqueci minha senha <ArrowUpRight size={15} />
           </ForgotPasswordLink>
         </LoginFields>
-        <LoginButton onClick={handleLogin} disabled={isLoading}>
+        <LoginButton
+          onClick={handleLogin}
+          disabled={isLoading || buttonDisabled}
+        >
           {isLoading ? <Spinner /> : "Entrar"}
         </LoginButton>
         <LoginThemeToggleContainer>
@@ -220,6 +239,8 @@ export function Login() {
                   } else {
                     navigate("/");
                   }
+                } else if (modalConfig.type === "error") {
+                  setButtonDisabled(false);
                 }
               }, 300);
             }}

@@ -69,12 +69,16 @@ export function FirstLogin() {
     message: string;
   } | null>(null);
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const navigate = useNavigate();
 
   const handleUpdatePin = async () => {
     if (!isButtonDisabled) {
       setIsLoading(true);
       try {
+        setButtonDisabled(true);
+
         const token = localStorage.getItem("@TAB:token");
 
         await api.patch(
@@ -121,7 +125,7 @@ export function FirstLogin() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (!buttonDisabled && e.key === "Enter") {
       handleUpdatePin();
     }
   };
@@ -215,6 +219,8 @@ export function FirstLogin() {
               setTimeout(() => {
                 if (modalConfig.type === "success") {
                   navigate("/");
+                } else if (modalConfig.type === "error") {
+                  setButtonDisabled(false);
                 }
               }, 300);
             }}

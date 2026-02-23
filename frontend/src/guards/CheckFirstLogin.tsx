@@ -8,8 +8,9 @@ interface User {
 export function CheckFirstLogin() {
   const location = useLocation();
   const userData = localStorage.getItem("@TAB:user");
+  const token = localStorage.getItem("@TAB:token");
 
-  if (!userData) {
+  if (!userData || !token) {
     if (location.pathname === "/login" || location.pathname === "/setup") {
       return <Outlet />;
     }
@@ -47,15 +48,6 @@ export function CheckFirstLogin() {
           state={{ showNotFirstLoginAnymoreAlert: true }}
           replace
         />
-      );
-    }
-
-    if (
-      (user && location.pathname === "/login") ||
-      location.pathname === "/setup"
-    ) {
-      return (
-        <Navigate to="/" state={{ showAlreadyLoggedInAlert: true }} replace />
       );
     }
 
