@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, ForbiddenException } from "@nestjs/common";
 import { WorkerRepository } from "./worker.repository";
 import { WorkerReturn } from "./types/interfaces/return.interface";
 import { CreateWorkerDto } from "./types/dto/create-worker.dto";
@@ -181,7 +181,7 @@ export class WorkerService {
         }
 
         if (![WorkerRole.ADMIN, WorkerRole.MANAGER].includes(role)) {
-          throw new UnauthorizedException(
+          throw new ForbiddenException(
             "fullName, role and hireDate are user edits restricted to: ADMIN, MANAGER",
           );
         }

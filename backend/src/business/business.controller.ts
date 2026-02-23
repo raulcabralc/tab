@@ -1,10 +1,10 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Query,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { BusinessService } from "./business.service";
@@ -375,7 +375,7 @@ export class BusinessController {
     const restaurantId = req.user?.restaurantId;
 
     if (!restaurantId) {
-      throw new UnauthorizedException("You must log in to use this route");
+      throw new ForbiddenException("You must log in to use this route");
     }
 
     return restaurantId;

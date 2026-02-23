@@ -1,8 +1,8 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { WorkerRole } from "../../worker/types/enums/role.enum";
@@ -27,7 +27,7 @@ export class RolesGuard implements CanActivate {
     const hasRole = requiredRoles.some((role) => user.role?.includes(role));
 
     if (!hasRole) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         `Route restricted to roles: ${requiredRoles.join(", ")}`,
       );
     }

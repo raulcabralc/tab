@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
   Req,
-  UnauthorizedException,
+  ForbiddenException,
   UseGuards,
 } from "@nestjs/common";
 import { CreateOrderDto } from "./types/dto/create-order.dto";
@@ -156,7 +156,7 @@ export class OrderController {
     const restaurantId = req.user?.restaurantId;
 
     if (!restaurantId) {
-      throw new UnauthorizedException("You must log in to use this route");
+      throw new ForbiddenException("You must log in to use this route");
     }
 
     return restaurantId;

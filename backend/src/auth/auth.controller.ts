@@ -1,10 +1,10 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Post,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { WorkerService } from "../worker/worker.service";
@@ -30,7 +30,7 @@ export class AuthController {
     );
 
     if (!worker) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new ForbiddenException("Invalid credentials");
     }
 
     return this.authService.login(worker);

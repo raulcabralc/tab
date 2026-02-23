@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
   Req,
-  UnauthorizedException,
+  ForbiddenException,
   UseGuards,
 } from "@nestjs/common";
 import { WorkerService } from "./worker.service";
@@ -65,7 +65,7 @@ export class WorkerController {
 
     if (userId !== id) {
       if (!this.isAdminOrManager(role)) {
-        throw new UnauthorizedException(
+        throw new ForbiddenException(
           "Route restricted to roles: ADMIN, MANAGER, OWN USER",
         );
       }
@@ -90,7 +90,7 @@ export class WorkerController {
 
     if (userId !== id) {
       if (!this.isAdminOrManager(role)) {
-        throw new UnauthorizedException(
+        throw new ForbiddenException(
           "Route restricted to roles: ADMIN, MANAGER, OWN USER",
         );
       }
@@ -133,7 +133,7 @@ export class WorkerController {
     const restaurantId = req.user?.restaurantId;
 
     if (!restaurantId) {
-      throw new UnauthorizedException("You must log in to use this route");
+      throw new ForbiddenException("You must log in to use this route");
     }
 
     return restaurantId;
@@ -143,7 +143,7 @@ export class WorkerController {
     const userId = req.user?.userId;
 
     if (!userId) {
-      throw new UnauthorizedException("You must log in to use this route");
+      throw new ForbiddenException("You must log in to use this route");
     }
 
     return userId;
@@ -153,7 +153,7 @@ export class WorkerController {
     const role = req.user?.role;
 
     if (!role) {
-      throw new UnauthorizedException("You must log in to use this route");
+      throw new ForbiddenException("You must log in to use this route");
     }
 
     return role as WorkerRole;
