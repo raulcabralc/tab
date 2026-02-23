@@ -69,6 +69,8 @@ export class AuthService {
         resetCode,
       );
     }
+
+    return worker;
   }
 
   async resetPassword(code: string, newPin: string) {
