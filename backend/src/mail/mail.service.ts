@@ -125,7 +125,7 @@ export class MailService {
 
                 <div style="text-align: center; margin: 40px 0; background-color: #111111; border: 1px dashed #F25F4C; border-radius: 12px; padding: 32px;">
                     <span style="display: block; color: #a3a3a3; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">Seu código é</span>
-                    <div style="font-family: 'Courier New', Courier, monospace; font-size: 48px; font-weight: 700; color: #F25F4C; letter-spacing: 12px; margin-left: 12px;">
+                    <div style="font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: 700; color: #F25F4C; letter-spacing: 12px; margin-left: 12px;">
                         ${resetCode}
                     </div>
                 </div>
