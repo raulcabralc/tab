@@ -50,8 +50,15 @@ export const LoginCard = styled.div`
     gap: 16px;
     width: 90%;
     max-width: 450px;
-    min-height: 900px;
     overflow-x: hidden;
+
+    &:not(.login) {
+      min-height: 900px;
+    }
+
+    &.forgot {
+      min-height: 750px;
+    }
 
     @media (max-width: 478px) {
       width: 100vw;

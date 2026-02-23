@@ -10,6 +10,7 @@ import { Setup } from "./pages/Setup";
 import { FirstLogin } from "./pages/FirstLogin";
 import { CheckFirstLogin } from "./guards/CheckFirstLogin";
 import { PublicRoute } from "./guards/PublicRoute";
+import { ResetPassword } from "./pages/ResetPassword";
 
 function Router() {
   return (
@@ -18,7 +19,7 @@ function Router() {
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/setup" element={<Setup />}></Route>
-          {/* <Route path="/reset-password" element></Route> */}
+          <Route path="/reset-password" element={<ResetPassword />}></Route>
         </Route>
 
         <Route element={<CheckFirstLogin />}>

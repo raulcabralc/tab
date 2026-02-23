@@ -23,6 +23,24 @@ import api from "@/services/api";
 import { StatusModal } from "@/components/StatusModal";
 import { AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 100 : -100,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    zIndex: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 100 : -100,
+    opacity: 0,
+    zIndex: 0,
+  }),
+};
 
 export function Login() {
   const location = useLocation();
@@ -145,81 +163,100 @@ export function Login() {
   return (
     <LoginContainer>
       <LoginCard>
-        <LoginLogoContainer src={Logo} />
-        <LoginHeader>Login</LoginHeader>
-        <LoginDescription>
-          Entre no sistema com seu email e senha
-        </LoginDescription>
-        <LoginFields>
-          <InputGroup>
-            <FloatingLabel
-              $isFloating={isEmailFocused || email.length > 0}
-              $hasError={emailError}
-              $isFocused={isEmailFocused}
+        <AnimatePresence mode="wait" custom={1}>
+          <motion.div
+            className="motion-div login"
+            key={1}
+            custom={1}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 500, damping: 40 },
+              opacity: { duration: 0.2 },
+            }}
+            style={{ width: "100%" }}
+          >
+            <LoginLogoContainer src={Logo} />
+            <LoginHeader>Login</LoginHeader>
+            <LoginDescription>
+              Entre no sistema com seu email e senha
+            </LoginDescription>
+            <LoginFields>
+              <InputGroup>
+                <FloatingLabel
+                  $isFloating={isEmailFocused || email.length > 0}
+                  $hasError={emailError}
+                  $isFocused={isEmailFocused}
+                >
+                  E-mail
+                </FloatingLabel>
+
+                <LoginInput
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError(false);
+                  }}
+                  onFocus={() => setIsEmailFocused(true)}
+                  onBlur={() => setIsEmailFocused(false)}
+                  onKeyDown={handleKeyDown}
+                  $hasError={emailError}
+                />
+              </InputGroup>
+              <ErrorMessage $isAppearing={emailError}>
+                E-mail inválido
+              </ErrorMessage>
+
+              <InputGroup>
+                <FloatingLabel
+                  $isFloating={isPasswordFocused || password.length > 0}
+                  $hasError={passwordError}
+                  $isFocused={isPasswordFocused}
+                >
+                  Senha
+                </FloatingLabel>
+
+                <LoginInput
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError(false);
+                  }}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
+                  onKeyDown={handleKeyDown}
+                  $hasError={passwordError}
+                />
+              </InputGroup>
+              <ErrorMessage $isAppearing={passwordError}>
+                Senha deve ter pelo menos 6 caracteres
+              </ErrorMessage>
+
+              <ForgotPasswordLink to="/reset-password">
+                Esqueci minha senha <ArrowUpRight size={15} />
+              </ForgotPasswordLink>
+            </LoginFields>
+            <LoginButton
+              onClick={handleLogin}
+              disabled={isLoading || buttonDisabled}
             >
-              E-mail
-            </FloatingLabel>
+              {isLoading ? <Spinner /> : "Entrar"}
+            </LoginButton>
+            <LoginThemeToggleContainer>
+              <Moon size={20} />
+              <ThemeSwitch />
+            </LoginThemeToggleContainer>
 
-            <LoginInput
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setEmailError(false);
-              }}
-              onFocus={() => setIsEmailFocused(true)}
-              onBlur={() => setIsEmailFocused(false)}
-              onKeyDown={handleKeyDown}
-              $hasError={emailError}
-            />
-          </InputGroup>
-          <ErrorMessage $isAppearing={emailError}>E-mail inválido</ErrorMessage>
-
-          <InputGroup>
-            <FloatingLabel
-              $isFloating={isPasswordFocused || password.length > 0}
-              $hasError={passwordError}
-              $isFocused={isPasswordFocused}
-            >
-              Senha
-            </FloatingLabel>
-
-            <LoginInput
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setPasswordError(false);
-              }}
-              onFocus={() => setIsPasswordFocused(true)}
-              onBlur={() => setIsPasswordFocused(false)}
-              onKeyDown={handleKeyDown}
-              $hasError={passwordError}
-            />
-          </InputGroup>
-          <ErrorMessage $isAppearing={passwordError}>
-            Senha deve ter pelo menos 6 caracteres
-          </ErrorMessage>
-
-          <ForgotPasswordLink to="/forgot-password">
-            Esqueci minha senha <ArrowUpRight size={15} />
-          </ForgotPasswordLink>
-        </LoginFields>
-        <LoginButton
-          onClick={handleLogin}
-          disabled={isLoading || buttonDisabled}
-        >
-          {isLoading ? <Spinner /> : "Entrar"}
-        </LoginButton>
-        <LoginThemeToggleContainer>
-          <Moon size={20} />
-          <ThemeSwitch />
-        </LoginThemeToggleContainer>
-
-        <RegisterText>Deseja usar o TAB no seu restaurante?</RegisterText>
-        <ForgotPasswordLink $register={true} to="/setup">
-          Cadastre seu estabelecimento
-        </ForgotPasswordLink>
+            <RegisterText>Deseja usar o TAB no seu restaurante?</RegisterText>
+            <ForgotPasswordLink $register={true} to="/setup">
+              Cadastre seu estabelecimento
+            </ForgotPasswordLink>
+          </motion.div>
+        </AnimatePresence>
       </LoginCard>
 
       <AnimatePresence>

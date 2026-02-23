@@ -17,7 +17,7 @@ import {
 } from "../Login/styled";
 
 import Logo from "@/assets/logo.png";
-import { ArrowLeft, Camera, Moon } from "lucide-react";
+import { ArrowLeft, Camera, MapPin, Moon, Store, User } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
@@ -380,7 +380,12 @@ export function Setup() {
             )}
             <LoginLogoContainer src={Logo} />
 
-            <Stepper step={step} />
+            <Stepper
+              step={step}
+              firstStep={<User size={20} />}
+              secondStep={<Store size={20} />}
+              thirdStep={<MapPin size={20} />}
+            />
 
             <LoginHeader>
               {step === 1
