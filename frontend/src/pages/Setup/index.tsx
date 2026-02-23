@@ -698,9 +698,12 @@ export function Setup() {
             message={modalConfig.message}
             onClose={() => {
               setModalConfig(null);
-              if (modalConfig.type === "success") {
-                navigate("/");
-              }
+
+              setTimeout(() => {
+                if (modalConfig.type === "success") {
+                  navigate("/");
+                }
+              }, 300);
             }}
           />
         )}

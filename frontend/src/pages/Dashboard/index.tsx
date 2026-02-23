@@ -226,6 +226,8 @@ function Dashboard() {
               message={modalConfig.message}
               onClose={() => {
                 setModalConfig(null);
+
+                setTimeout(() => {}, 300);
               }}
             />
           )}
