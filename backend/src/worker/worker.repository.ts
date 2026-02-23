@@ -162,13 +162,13 @@ export class WorkerRepository {
     return updatedWorker as Worker;
   }
 
-  async forgotPassword(email: string, resetToken: string, expires: Date) {
+  async forgotPassword(email: string, resetCode: string, expires: Date) {
     const updatedWorker = await this.workerModel.findOneAndUpdate(
       {
         email,
       },
       {
-        resetPasswordCode: resetToken,
+        resetPasswordCode: resetCode,
         resetPasswordExpires: expires,
       },
       { new: true },
