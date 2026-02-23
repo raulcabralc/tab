@@ -54,7 +54,7 @@ export class AuthService {
     const resetCode = this.randomCode();
 
     const expires = new Date();
-    expires.setHours(expires.getHours() + 1);
+    expires.setMinutes(expires.getMinutes() + 15);
 
     const worker = (await this.workerService.forgotPassword(
       email,
