@@ -33,4 +33,8 @@ export class UpdateWorkerDto {
   @IsOptional()
   @IsDateString()
   hireDate?: Date;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }
