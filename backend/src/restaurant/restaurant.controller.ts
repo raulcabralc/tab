@@ -23,7 +23,14 @@ import { RolesGuard } from "../auth/guards/roles.guard";
 export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Roles(WorkerRole.ADMIN)
+  @Roles(
+    WorkerRole.ADMIN,
+    WorkerRole.BARTENDER,
+    WorkerRole.CHEF,
+    WorkerRole.DELIVERY,
+    WorkerRole.MANAGER,
+    WorkerRole.WAITER,
+  )
   @UseGuards(JwtAuthGuard, FirstLoginGuard, RolesGuard)
   @Get("/:id")
   async findOne(@Param("id") id: string) {
@@ -36,7 +43,7 @@ export class RestaurantController {
     return await this.restaurantService.create(restaurant);
   }
 
-  @Roles(WorkerRole.ADMIN)
+  @Roles(WorkerRole.ADMIN, WorkerRole.MANAGER)
   @UseGuards(JwtAuthGuard, FirstLoginGuard, RolesGuard)
   @Patch("/update/:id")
   async update(
