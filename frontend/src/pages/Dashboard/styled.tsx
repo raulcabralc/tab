@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 export const DashboardContainer = styled.div`
   padding: 100px 150px;
+  overflow-x: hidden;
 
   @media (max-width: 1300px) {
     padding: 30px 55px;
@@ -87,13 +88,22 @@ export const TitleText = styled.span`
     -apple-system,
     sans-serif;
   -webkit-text-stroke: 2px ${(props) => props.theme.primary};
+  text-overflow: ellipsis;
+
+  @media (max-width: 830px) {
+    font-size: 3rem;
+  }
+
+  @media (max-width: 556px) {
+    font-size: 2.5rem;
+  }
 
   @media (max-width: 476px) {
-    font-size: 3.3rem;
+    font-size: 2.25rem;
   }
 
   @media (max-width: 410px) {
-    font-size: 3rem;
+    font-size: 2rem;
   }
 `;
 
@@ -174,4 +184,105 @@ export const ProgressBar = styled.div<{ $percent: number }>`
   border-radius: 10px;
   transition: all 0.5 ease-in-out;
   box-shadow: 0 0 15px 3px ${(props) => props.theme.primary};
+`;
+
+const shimmer = keyframes`
+  0% {
+    background-position: -200% 0;
+  } 100% {
+    background-position: 200% 0;
+  }
+`;
+
+export const SkeletonBase = styled.div`
+  background: linear-gradient(
+    90deg,
+    ${(props) => props.theme.sidebarBackground} 25%,
+    ${(props) => props.theme.sidebarEdge} 50%,
+    ${(props) => props.theme.sidebarBackground} 75%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.5s infinite linear;
+  border-radius: 8px;
+`;
+
+export const SkeletonCard = styled(SkeletonBase)`
+  width: 100%;
+  height: 140px;
+  margin-bottom: 16px;
+`;
+
+// TEXT
+
+export const SkeletonTitleText = styled(SkeletonBase)`
+  width: 500px;
+  height: 95px;
+
+  @media (max-width: 830px) {
+    width: 240px;
+    height: 65px;
+  }
+
+  @media (max-width: 556px) {
+    width: 200px;
+    height: 55px;
+  }
+
+  @media (max-width: 476px) {
+    width: 180px;
+    height: 50px;
+  }
+
+  @media (max-width: 410px) {
+    width: 160px;
+    height: 45px;
+  }
+`;
+
+export const SkeletonUserCardName = styled(SkeletonBase)`
+  width: 120px;
+  height: 18px;
+  border-radius: 4px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+// AVATAR
+
+export const SkeletonAvatar = styled(SkeletonBase)`
+  border-radius: 50%;
+`;
+
+export const SkeletonSidebarAvatar = styled(SkeletonAvatar)`
+  width: 45px;
+  min-height: 45px;
+  height: auto;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    min-height: 40px;
+  }
+`;
+
+export const SkeletonTitleAvatar = styled(SkeletonAvatar)`
+  width: 100px;
+  min-height: 100px;
+  height: auto;
+
+  @media (max-width: 556px) {
+    width: 80px;
+    min-height: 80px;
+  }
+
+  @media (max-width: 476px) {
+    width: 70px;
+    min-height: 70px;
+  }
+
+  @media (max-width: 410px) {
+    width: 60px;
+    min-height: 60px;
+  }
 `;

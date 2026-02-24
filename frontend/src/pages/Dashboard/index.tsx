@@ -15,19 +15,21 @@ import {
   Number,
   ProgressBar,
   ProgressTrack,
+  SkeletonCard,
+  SkeletonTitleAvatar,
+  SkeletonTitleText,
   TitleContainer,
   TitleImage,
   TitleText,
 } from "./styled";
 
 import { WorkerRole } from "../../../../backend/src/worker/types/enums/role.enum";
-import { restaurantMock } from "@/restaurant-mock";
 import { ordersMock } from "@/orders-mock";
-import { userMock } from "@/user-mock";
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { StatusModal } from "@/components/StatusModal";
 import { useLocation } from "react-router-dom";
+import api from "@/services/api";
 
 function Dashboard() {
   const location = useLocation();
@@ -56,6 +58,26 @@ function Dashboard() {
 
       window.history.replaceState({}, document.title);
     }
+
+    const loadDashboardData = async () => {
+      setIsLoadingData(true);
+      try {
+        const { user, restaurant } = await getData();
+        setUser(user);
+        setRestaurant(restaurant);
+      } catch (e) {
+        setModalConfig({
+          isOpen: true,
+          type: "error",
+          title: "Ops!",
+          message: "Ocorreu um erro ao carregar os dados.",
+        });
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   const [modalConfig, setModalConfig] = useState<{
@@ -65,17 +87,31 @@ function Dashboard() {
     message: string;
   } | null>(null);
 
+  const [user, setUser] = useState<any>(null);
+  const [restaurant, setRestaurant] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  const getData = async () => {
+    const userData = await api.get("/auth/me");
+    const user = userData.data;
+
+    const restaurantData = await api.get(`/restaurant/${user.restaurantId}`);
+    const restaurant = restaurantData.data;
+
+    return { user, restaurant };
+  };
+
   const preparingOrders = ordersMock.filter(
     (order) => order.status === "PREPARING",
   );
   const lateOrders = ordersMock.filter((order) => order.priority === "HIGH");
 
-  const totalTables = restaurantMock.totalTables;
+  const totalTables = restaurant?.totalTables;
   const occupiedTables = 12;
   const occupancyPercent = (occupiedTables / totalTables) * 100;
 
   const visibleTo = (roles: WorkerRole[] = []) => {
-    const currentRole = userMock.role as WorkerRole;
+    const currentRole = user?.role as WorkerRole;
     const allowed = [WorkerRole.ADMIN, WorkerRole.MANAGER, ...roles];
     return allowed.includes(currentRole);
   };
@@ -109,112 +145,129 @@ function Dashboard() {
     <>
       <DashboardContainer>
         <TitleContainer>
-          <TitleImage src={restaurantMock.image} alt="Logo" />
-          <TitleText>{restaurantMock.name}</TitleText>
+          {isLoadingData ? (
+            <SkeletonTitleAvatar />
+          ) : (
+            <TitleImage src={restaurant?.image} alt="Logo" />
+          )}
+
+          {isLoadingData ? (
+            <SkeletonTitleText />
+          ) : (
+            <TitleText>{restaurant?.name}</TitleText>
+          )}
         </TitleContainer>
 
         <DashboardGrid>
-          <Card to="/orders">
-            <CardHeader>
-              <ChefHat size={20} /> Status da Cozinha
-            </CardHeader>
-            <span>
-              <Number>{preparingOrders.length}</Number> pedidos em{" "}
-              <BoldSpan>produção</BoldSpan>.
-            </span>
-            <span>
-              {lateOrders.length > 0 ? (
-                <Number>{lateOrders.length}</Number>
-              ) : (
-                <BoldSpan>0</BoldSpan>
-              )}{" "}
-              pedidos <BoldSpan>atrasados</BoldSpan>.
-            </span>
-          </Card>
+          {isLoadingData ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          ) : (
+            <>
+              <Card to="/orders">
+                <CardHeader>
+                  <ChefHat size={20} /> Status da Cozinha
+                </CardHeader>
+                <span>
+                  <Number>{preparingOrders.length}</Number> pedidos em{" "}
+                  <BoldSpan>produção</BoldSpan>.
+                </span>
+                <span>
+                  {lateOrders.length > 0 ? (
+                    <Number>{lateOrders.length}</Number>
+                  ) : (
+                    <BoldSpan>0</BoldSpan>
+                  )}{" "}
+                  pedidos <BoldSpan>atrasados</BoldSpan>.
+                </span>
+              </Card>
 
-          {visibleTo([WorkerRole.WAITER]) && (
-            <Card to="">
-              <CardHeader>
-                <LayoutGrid size={20} /> Ocupação de Mesas
-              </CardHeader>
-              <span>
-                {occupiedTables < totalTables ? (
-                  <BoldSpan>{occupiedTables}</BoldSpan>
-                ) : (
-                  <Number>{occupiedTables}</Number>
-                )}{" "}
-                / <Number>{totalTables}</Number> mesas ocupadas.
-              </span>
-              <ProgressTrack>
-                <ProgressBar $percent={occupancyPercent} />
-              </ProgressTrack>
-            </Card>
-          )}
+              {visibleTo([WorkerRole.WAITER]) && (
+                <Card to="">
+                  <CardHeader>
+                    <LayoutGrid size={20} /> Ocupação de Mesas
+                  </CardHeader>
+                  <span>
+                    {occupiedTables < totalTables ? (
+                      <BoldSpan>{occupiedTables}</BoldSpan>
+                    ) : (
+                      <Number>{occupiedTables}</Number>
+                    )}{" "}
+                    / <Number>{totalTables}</Number> mesas ocupadas.
+                  </span>
+                  <ProgressTrack>
+                    <ProgressBar $percent={occupancyPercent} />
+                  </ProgressTrack>
+                </Card>
+              )}
 
-          {visibleTo() && (
-            <Card to="/analysis">
-              <CardHeader>
-                <DollarSign size={20} /> Faturamento Hoje
-              </CardHeader>
-              <span>
-                {totalMoneySalesToday > 0 ? (
-                  <Number>R$ {totalMoneySalesToday.toFixed(2)}</Number>
-                ) : (
-                  <BoldSpan>0</BoldSpan>
-                )}{" "}
-                faturado hoje.
-              </span>
-              <span>
-                {canceledSalesToday > 0 ? (
-                  <Number>{canceledSalesToday}</Number>
-                ) : (
-                  <BoldSpan>0</BoldSpan>
-                )}{" "}
-                pedidos cancelados hoje.
-              </span>
-            </Card>
-          )}
+              {visibleTo() && (
+                <Card to="/analysis">
+                  <CardHeader>
+                    <DollarSign size={20} /> Faturamento Hoje
+                  </CardHeader>
+                  <span>
+                    {totalMoneySalesToday > 0 ? (
+                      <Number>R$ {totalMoneySalesToday.toFixed(2)}</Number>
+                    ) : (
+                      <BoldSpan>0</BoldSpan>
+                    )}{" "}
+                    faturado hoje.
+                  </span>
+                  <span>
+                    {canceledSalesToday > 0 ? (
+                      <Number>{canceledSalesToday}</Number>
+                    ) : (
+                      <BoldSpan>0</BoldSpan>
+                    )}{" "}
+                    pedidos cancelados hoje.
+                  </span>
+                </Card>
+              )}
 
-          {visibleTo() && (
-            <Card to="/analysis">
-              <CardHeader>
-                <TrendingUp size={20} /> Ticket Médio
-              </CardHeader>
-              <span>
-                {averageTicketToday > 0 ? (
-                  <Number>R$ {averageTicketToday.toFixed(2)}</Number>
-                ) : (
-                  <BoldSpan>0</BoldSpan>
-                )}{" "}
-                por pedido realizado.
-              </span>
-              <span>
-                {totalSalesToday > 0 ? (
-                  <Number>{totalSalesToday}</Number>
-                ) : (
-                  <BoldSpan>0</BoldSpan>
-                )}{" "}
-                pedidos realizados hoje.
-              </span>
-            </Card>
-          )}
+              {visibleTo() && (
+                <Card to="/analysis">
+                  <CardHeader>
+                    <TrendingUp size={20} /> Ticket Médio
+                  </CardHeader>
+                  <span>
+                    {averageTicketToday > 0 ? (
+                      <Number>R$ {averageTicketToday.toFixed(2)}</Number>
+                    ) : (
+                      <BoldSpan>0</BoldSpan>
+                    )}{" "}
+                    por pedido realizado.
+                  </span>
+                  <span>
+                    {totalSalesToday > 0 ? (
+                      <Number>{totalSalesToday}</Number>
+                    ) : (
+                      <BoldSpan>0</BoldSpan>
+                    )}{" "}
+                    pedidos realizados hoje.
+                  </span>
+                </Card>
+              )}
 
-          {visibleTo([WorkerRole.WAITER]) && (
-            <Card className="dotted" to="/orders/create">
-              <CardHeader>
-                <ClipboardPlus size={20} /> Novo Pedido
-              </CardHeader>
-              <span>Lançar novo pedido para mesa.</span>
-            </Card>
-          )}
+              {visibleTo([WorkerRole.WAITER]) && (
+                <Card className="dotted" to="/orders/create">
+                  <CardHeader>
+                    <ClipboardPlus size={20} /> Novo Pedido
+                  </CardHeader>
+                  <span>Lançar novo pedido para mesa.</span>
+                </Card>
+              )}
 
-          {visibleTo([WorkerRole.WAITER]) && (
-            <Card className="dotted" to="/orders/close">
-              <CardHeader>
-                <ReceiptText size={20} /> Fechar conta
-              </CardHeader>
-              <span>Encerrar atendimento e emitir conta.</span>
-            </Card>
+              {visibleTo([WorkerRole.WAITER]) && (
+                <Card className="dotted" to="/orders/close">
+                  <CardHeader>
+                    <ReceiptText size={20} /> Fechar conta
+                  </CardHeader>
+                  <span>Encerrar atendimento e emitir conta.</span>
+                </Card>
+              )}
+            </>
           )}
         </DashboardGrid>
 

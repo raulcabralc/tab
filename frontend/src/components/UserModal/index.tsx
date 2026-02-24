@@ -14,9 +14,11 @@ import {
   UserMain,
   XButton,
 } from "./styled";
-import { userMock } from "@/user-mock";
 import { roleConversion } from "@/helpers/roleConversion";
 import { formatDate } from "@/helpers/formatDate";
+import { useEffect, useState } from "react";
+import { StatusModal } from "../StatusModal";
+import { AnimatePresence } from "framer-motion";
 
 export const overlayVariants = {
   hidden: { opacity: 0 },
@@ -59,7 +61,42 @@ export const modalVariants = {
   },
 };
 
-function UserModal({ onClose }: { onClose: () => void }) {
+interface UserModalData {
+  _id: string;
+  createdAt: string;
+  displayName: string;
+  email: string;
+  fullName: string;
+  hireDate: string;
+  isActive: boolean;
+  isFirstLogin: boolean;
+  resetPasswordCode: string;
+  resetPasswordExpires: string;
+  restaurantId: string;
+  role: string;
+  updatedAt: string;
+}
+
+function UserModal({
+  onClose,
+  data,
+}: {
+  onClose: () => void;
+  data: UserModalData;
+}) {
+  useEffect(() => {
+    setUser(data);
+  }, []);
+
+  const [user, setUser] = useState<any>(null);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: "success" | "error" | "warning";
+    title: string;
+    message: string;
+  } | null>(null);
+
   return (
     <ModalOverlay
       onClick={onClose}
@@ -80,32 +117,33 @@ function UserModal({ onClose }: { onClose: () => void }) {
 
         <ModalContent>
           <UserMain>
-            {userMock.avatar ? (
-              <ModalUserImage src={userMock.avatar} alt="User" />
+            {user?.avatar ? (
+              <ModalUserImage src={user?.avatar} alt="User" />
             ) : (
               <ModalUserImage
-                alt={userMock.displayName.split("")[0].toUpperCase()}
+                alt={user?.displayName.split("")[0].toUpperCase()}
               />
             )}
-            <p>{userMock.displayName}</p>
+
+            <p>{user?.displayName}</p>
           </UserMain>
 
           <UserDetails>
             <Detail>
               <DetailName>Nome Completo</DetailName>
-              <DetailValue>{userMock.fullName}</DetailValue>
+              <DetailValue>{user?.fullName}</DetailValue>
             </Detail>
             <Detail>
               <DetailName>Cargo</DetailName>
-              <DetailValue>{roleConversion(userMock.role)}</DetailValue>
+              <DetailValue>{roleConversion(user?.role)}</DetailValue>
             </Detail>
             <Detail>
               <DetailName>Email</DetailName>
-              <DetailValue>{userMock.email}</DetailValue>
+              <DetailValue>{user?.email}</DetailValue>
             </Detail>
             <Detail>
               <DetailName>Contratação</DetailName>
-              <DetailValue>{formatDate(userMock.hireDate)}</DetailValue>
+              <DetailValue>{formatDate(user?.hireDate)}</DetailValue>
             </Detail>
             <Detail className="switch">
               <DetailName>Modo Escuro</DetailName>
@@ -113,7 +151,7 @@ function UserModal({ onClose }: { onClose: () => void }) {
             </Detail>
             <Detail>
               <IsActive>
-                {userMock.isActive ? (
+                {user?.isActive ? (
                   <>
                     <Check size={20} />
                     <span>Ativo</span>
@@ -130,12 +168,27 @@ function UserModal({ onClose }: { onClose: () => void }) {
         </ModalContent>
 
         <ModalOptions>
-          <ModalButton to={`/users/edit/${userMock.id}`} onClick={onClose}>
+          <ModalButton to={`/users/edit/${user?.id}`} onClick={onClose}>
             <Pen size={20} />
             <span>Editar</span>
           </ModalButton>
         </ModalOptions>
       </ModalContainer>
+
+      <AnimatePresence>
+        {modalConfig?.isOpen && (
+          <StatusModal
+            type={modalConfig.type}
+            title={modalConfig.title}
+            message={modalConfig.message}
+            onClose={() => {
+              setModalConfig(null);
+
+              setTimeout(() => {}, 300);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </ModalOverlay>
   );
 }

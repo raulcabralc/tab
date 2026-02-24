@@ -13,7 +13,7 @@ import {
 import { ThemeSwitch } from "../ThemeSwitch";
 
 import logo from "../../assets/logo.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserModal from "../UserModal";
 import {
   BarChart3,
@@ -24,11 +24,53 @@ import {
 } from "lucide-react";
 
 import { AnimatePresence } from "framer-motion";
-
-import { userMock } from "@/user-mock";
+import api from "@/services/api";
+import { StatusModal } from "../StatusModal";
+import {
+  SkeletonSidebarAvatar,
+  SkeletonUserCardName,
+} from "@/pages/Dashboard/styled";
 
 function Sidebar() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      setIsLoadingData(true);
+      try {
+        const { user } = await getData();
+        setUser(user);
+      } catch (e) {
+        setModalConfig({
+          isOpen: true,
+          type: "error",
+          title: "Ops!",
+          message: "Ocorreu um erro ao carregar os dados.",
+        });
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
+  const [user, setUser] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: "success" | "error" | "warning";
+    title: string;
+    message: string;
+  } | null>(null);
+
+  const getData = async () => {
+    const userData = await api.get("/auth/me");
+    const user = userData.data;
+
+    return { user };
+  };
 
   return (
     <SidebarContainer>
@@ -69,19 +111,43 @@ function Sidebar() {
       </ThemeToggleArea>
 
       <SidebarFooter>
-        <UserCard onClick={() => setIsProfileModalOpen(true)}>
-          {userMock.avatar ? (
-            <UserImage src={userMock.avatar} />
+        <UserCard
+          onClick={() => (isLoadingData ? null : setIsProfileModalOpen(true))}
+        >
+          {isLoadingData ? (
+            <SkeletonSidebarAvatar />
+          ) : user?.avatar ? (
+            <UserImage src={user?.avatar} alt="User" />
           ) : (
-            <UserImage alt={userMock.displayName.split("")[0].toUpperCase()} />
+            <UserImage alt={user?.displayName.split("")[0].toUpperCase()} />
           )}
-          <span>{userMock.displayName}</span>
+
+          {isLoadingData ? (
+            <SkeletonUserCardName />
+          ) : (
+            <span>{user?.displayName}</span>
+          )}
         </UserCard>
       </SidebarFooter>
 
       <AnimatePresence>
         {isProfileModalOpen && (
-          <UserModal onClose={() => setIsProfileModalOpen(false)} />
+          <UserModal data={user} onClose={() => setIsProfileModalOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {modalConfig?.isOpen && (
+          <StatusModal
+            type={modalConfig.type}
+            title={modalConfig.title}
+            message={modalConfig.message}
+            onClose={() => {
+              setModalConfig(null);
+
+              setTimeout(() => {}, 300);
+            }}
+          />
         )}
       </AnimatePresence>
     </SidebarContainer>

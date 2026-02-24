@@ -17,6 +17,11 @@ export const UserImage = styled.img`
   object-fit: cover;
   border-radius: 100%;
   border: solid 2px ${(props) => props.theme.sidebarCategory};
+  transition: all 0.1s ease-in-out;
+
+  &:hover {
+    background-color: ${(props) => props.theme.sidebarBackground};
+  }
 
   @media (max-width: 768px) {
     width: 40px;
@@ -214,7 +219,11 @@ export const UserCard = styled.div`
   @media (max-width: 768px) {
     display: flex;
     padding: 0;
-    background-color: none;
+    background-color: ${(props) => props.theme.sidebarBackground};
+
+    &:hover {
+      background-color: ${(props) => props.theme.sidebarBackground};
+    }
   }
 `;
 
