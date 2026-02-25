@@ -20,6 +20,8 @@ export const black = {
 
 export const error = "#F25F4C";
 
+export const darkRed = "#e71b00";
+
 export const success = "#4CAF50";
 
 export const warning = "#eb9c43";

@@ -11,7 +11,10 @@ export function CheckFirstLogin() {
   const token = localStorage.getItem("@TAB:token");
 
   if (!userData || !token) {
-    if (location.pathname === "/login" || location.pathname === "/setup") {
+    if (
+      location.pathname.startsWith("/login") ||
+      location.pathname.startsWith("/setup")
+    ) {
       return <Outlet />;
     }
 

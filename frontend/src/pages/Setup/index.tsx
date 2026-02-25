@@ -526,6 +526,7 @@ export function Setup() {
                       onFocus={() => setFocusedField("restaurantName")}
                       onBlur={() => setFocusedField(null)}
                       $hasError={restaurantNameError}
+                      maxLength={25}
                     />
                   </InputGroup>
                   <ErrorMessage $isAppearing={restaurantNameError}>

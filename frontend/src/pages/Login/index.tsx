@@ -71,6 +71,17 @@ export function Login() {
       window.history.replaceState({}, document.title);
     }
 
+    if (searchParams.get("loggedOut") === "true") {
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "Usuário deslogado com sucesso.",
+      });
+
+      window.history.replaceState({}, document.title);
+    }
+
     if (searchParams.get("sessionExpired") === "true") {
       setModalConfig({
         isOpen: true,
@@ -266,16 +277,14 @@ export function Login() {
             title={modalConfig.title}
             message={modalConfig.message}
             onClose={() => {
-              const isFirst = modalConfig.isFirstLogin;
               setModalConfig(null);
 
               setTimeout(() => {
-                if (modalConfig.type === "success") {
-                  if (isFirst) {
-                    navigate("/update-password");
-                  } else {
-                    navigate("/");
-                  }
+                if (
+                  modalConfig.type === "success" &&
+                  modalConfig.message !== "Usuário deslogado com sucesso."
+                ) {
+                  navigate("/");
                 } else if (modalConfig.type === "error") {
                   setButtonDisabled(false);
                 }

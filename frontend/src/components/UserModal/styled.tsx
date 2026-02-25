@@ -165,4 +165,8 @@ export const ModalButton = styled(NavLink)`
   &:hover svg {
     stroke-width: 3px;
   }
+
+  &.logout {
+    background: ${color.darkRed};
+  }
 `;

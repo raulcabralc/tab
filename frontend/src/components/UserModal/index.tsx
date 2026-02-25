@@ -1,4 +1,4 @@
-import { Check, Pen, X } from "lucide-react";
+import { Check, DoorOpen, Pen, X } from "lucide-react";
 import { ModalContainer, ModalHeader, ModalOverlay } from "../Sidebar/styled";
 import { ThemeSwitch } from "../ThemeSwitch";
 import {
@@ -97,6 +97,11 @@ function UserModal({
     message: string;
   } | null>(null);
 
+  const handleLogout = () => {
+    localStorage.removeItem("@TAB:token");
+    localStorage.removeItem("@TAB:user");
+  };
+
   return (
     <ModalOverlay
       onClick={onClose}
@@ -171,6 +176,15 @@ function UserModal({
           <ModalButton to={`/users/edit/${user?.id}`} onClick={onClose}>
             <Pen size={20} />
             <span>Editar</span>
+          </ModalButton>
+
+          <ModalButton
+            to="/login?loggedOut=true"
+            onClick={handleLogout}
+            className="logout"
+          >
+            <DoorOpen size={20} />
+            <span>Sair</span>
           </ModalButton>
         </ModalOptions>
       </ModalContainer>
