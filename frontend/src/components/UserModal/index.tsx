@@ -173,7 +173,7 @@ function UserModal({
         </ModalContent>
 
         <ModalOptions>
-          <ModalButton to={`/users/edit/${user?.id}`} onClick={onClose}>
+          <ModalButton to={`/users/edit/${user?._id}`} onClick={onClose}>
             <Pen size={20} />
             <span>Editar</span>
           </ModalButton>

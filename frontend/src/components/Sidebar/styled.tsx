@@ -278,6 +278,12 @@ export const ModalContainer = styled(motion.div)`
     top: 0;
     border-radius: 0;
   }
+
+  &.hours {
+    @media (max-width: 410px) {
+      align-content: center;
+    }
+  }
 `;
 
 export const ModalHeader = styled.div`

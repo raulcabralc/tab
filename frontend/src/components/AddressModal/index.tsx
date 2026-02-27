@@ -13,7 +13,7 @@ import {
   HiddenCheckbox,
   NoNumberWrapper,
 } from "./styled";
-import { LoginInput, LoginButton, ErrorMessage } from "@/pages/Login/styled"; // Reaproveitando seus estilos
+import { LoginInput, LoginButton, ErrorMessage } from "@/pages/Login/styled";
 import { useState, useEffect } from "react";
 import { modalVariants, overlayVariants } from "../UserModal";
 import axios from "axios";

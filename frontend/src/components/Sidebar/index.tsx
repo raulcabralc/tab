@@ -17,8 +17,8 @@ import { useEffect, useState } from "react";
 import UserModal from "../UserModal";
 import {
   BarChart3,
-  BookOpen,
   LayoutDashboard,
+  Store,
   Users,
   UtensilsCrossed,
 } from "lucide-react";
@@ -94,9 +94,9 @@ function Sidebar() {
           <Users size={20} />
           <span>Equipe</span>
         </NavItem>
-        <NavItem to="/menu">
-          <BookOpen size={20} />
-          <span>Cardápio</span>
+        <NavItem to="/restaurant">
+          <Store size={20} />
+          <span>Restaurante</span>
         </NavItem>
         <SidebarCategory>Estratégia</SidebarCategory>
         <NavItem to="/analysis">

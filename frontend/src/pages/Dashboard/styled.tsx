@@ -14,7 +14,7 @@ export const DashboardContainer = styled.div`
   }
 
   @media (max-width: 476px) {
-    padding: 30px 0px;
+    padding: 30px 12px;
   }
 `;
 
@@ -107,15 +107,23 @@ export const TitleText = styled.span`
   }
 `;
 
-export const Card = styled(NavLink)`
-  cursor: pointer;
+export const Card = styled(NavLink)<{ $deactivated?: boolean }>`
+  position: relative;
+  cursor: ${(props) => (props.$deactivated ? "default" : "pointer")};
   display: flex;
   flex-flow: column wrap;
   gap: 16px;
   padding: 24px;
   border-radius: 12px;
-  border: 1px solid ${(props) => props.theme.sidebarEdge};
-  background-color: ${(props) => props.theme.sidebarBackground};
+  border: 1px solid
+    ${(props) =>
+      props.$deactivated
+        ? props.theme.sidebarCategory
+        : props.theme.sidebarEdge};
+  background-color: ${(props) =>
+    props.$deactivated
+      ? props.theme.sidebarEdge
+      : props.theme.sidebarBackground};
   color: ${(props) => props.theme.text};
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
@@ -125,8 +133,11 @@ export const Card = styled(NavLink)`
   }
 
   &:hover {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    transform: scale(1.05);
+    box-shadow: ${(props) =>
+      props.$deactivated
+        ? "0 0 15px rgba(0, 0, 0, 0.2)"
+        : "0 0 15px rgba(0, 0, 0, 0.3)"};
+    transform: ${(props) => (props.$deactivated ? "scale(1)" : "scale(1.05)")};
   }
 
   &.dotted {
@@ -141,6 +152,26 @@ export const Card = styled(NavLink)`
 
   &:last-child:nth-child(odd) {
     grid-column: 1 / -1;
+  }
+
+  span.config {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+
+    svg {
+      position: absolute;
+      opacity: 0.1;
+      top: 0;
+      left: 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  @media (max-width: 476px) {
+    &:hover {
+      transform: scale(1);
+    }
   }
 `;
 

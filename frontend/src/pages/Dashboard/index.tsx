@@ -4,6 +4,7 @@ import {
   DollarSign,
   LayoutGrid,
   ReceiptText,
+  Settings,
   TrendingUp,
 } from "lucide-react";
 import {
@@ -184,21 +185,33 @@ function Dashboard() {
               </Card>
 
               {visibleTo([WorkerRole.WAITER]) && (
-                <Card to="">
+                <Card $deactivated={!restaurant.totalTables} to="">
                   <CardHeader>
                     <LayoutGrid size={20} /> Ocupação de Mesas
                   </CardHeader>
-                  <span>
-                    {occupiedTables < totalTables ? (
-                      <BoldSpan>{occupiedTables}</BoldSpan>
-                    ) : (
-                      <Number>{occupiedTables}</Number>
-                    )}{" "}
-                    / <Number>{totalTables}</Number> mesas ocupadas.
-                  </span>
-                  <ProgressTrack>
-                    <ProgressBar $percent={occupancyPercent} />
-                  </ProgressTrack>
+                  {restaurant.totalTables ? (
+                    <>
+                      <span>
+                        {occupiedTables < totalTables ? (
+                          <BoldSpan>{occupiedTables}</BoldSpan>
+                        ) : (
+                          <Number>{occupiedTables}</Number>
+                        )}{" "}
+                        / <Number>{totalTables}</Number> mesas ocupadas.
+                      </span>
+                      <ProgressTrack>
+                        <ProgressBar $percent={occupancyPercent} />
+                      </ProgressTrack>
+                    </>
+                  ) : (
+                    <>
+                      <span className="config">
+                        Mesas devem ser configuradas nas configurações do{" "}
+                        restaurante
+                        <Settings size={80} />
+                      </span>
+                    </>
+                  )}
                 </Card>
               )}
 
@@ -262,7 +275,7 @@ function Dashboard() {
               {visibleTo([WorkerRole.WAITER]) && (
                 <Card className="dotted" to="/orders/close">
                   <CardHeader>
-                    <ReceiptText size={20} /> Fechar conta
+                    <ReceiptText size={20} /> Fechar Conta
                   </CardHeader>
                   <span>Encerrar atendimento e emitir conta.</span>
                 </Card>

@@ -1,4 +1,5 @@
 import styled, { createGlobalStyle } from "styled-components";
+import * as color from "./colors";
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -7,6 +8,16 @@ export const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: ${color.rebound.default};
+    color: ${color.white.default};
+  }
+
+  ::-moz-selection {
+    background: ${color.rebound.default};
+    color: ${color.white.default};
   }
 
   body {
