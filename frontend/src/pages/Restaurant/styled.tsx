@@ -183,8 +183,9 @@ export const ModalButton = styled.div`
   border: 2px dashed ${(props) => props.theme.primary};
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: ${(props) => props.theme.primary};
 
   @media (max-width: 410px) {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 `;

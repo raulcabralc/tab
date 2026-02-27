@@ -18,6 +18,7 @@ import { AnimatePresence } from "framer-motion";
 import { StatusModal } from "@/components/StatusModal";
 import { Phone, Settings2, Store } from "lucide-react";
 import HoursModal, { DayHours } from "@/components/HoursModal";
+import CuisineModal from "@/components/CuisineModal";
 
 interface RestaurantInterface {
   _id: string;
@@ -65,6 +66,7 @@ function Restaurant() {
   } | null>(null);
 
   const [isHoursModalOpen, setIsHoursModalOpen] = useState(false);
+  const [isCuisineModalOpen, setIsCuisineModalOpen] = useState(false);
 
   const [restaurant, setRestaurant] = useState<RestaurantInterface | null>(
     null,
@@ -109,6 +111,34 @@ function Restaurant() {
     }
   };
 
+  const handleSaveCuisine = async (cuisines: string[]) => {
+    try {
+      const response = await api.patch(
+        `/restaurant/update/${restaurant?._id}`,
+        {
+          cuisines,
+        },
+      );
+
+      setRestaurant(response.data);
+
+      setIsHoursModalOpen(false);
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "As culinárias foram atualizadas.",
+      });
+    } catch (error) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Erro ao salvar",
+        message: "Não foi possível atualizar culinárias. Tente novamente.",
+      });
+    }
+  };
+
   return (
     <>
       <RestaurantContainer>
@@ -133,9 +163,13 @@ function Restaurant() {
               <DetailValue>{restaurant?.description}</DetailValue>
             </Detail>
 
-            <Detail>
+            <Detail
+              onClick={() => {
+                isLoadingData ? 0 : setIsCuisineModalOpen(true);
+              }}
+            >
               <DetailName>Culinárias</DetailName>
-              <DetailValue>{restaurant?.cuisines.join(" • ")}</DetailValue>
+              <ModalButton>Clique para editar as culinárias</ModalButton>
             </Detail>
 
             <Detail
@@ -185,6 +219,16 @@ function Restaurant() {
               initialData={restaurant?.openingHours as DayHours[]}
               onClose={() => setIsHoursModalOpen(false)}
               onSave={handleSaveHours}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isCuisineModalOpen && (
+            <CuisineModal
+              initialData={restaurant?.cuisines as string[]}
+              onClose={() => setIsCuisineModalOpen(false)}
+              onSave={handleSaveCuisine}
             />
           )}
         </AnimatePresence>
