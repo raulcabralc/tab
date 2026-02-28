@@ -242,3 +242,8 @@ export const SkeletonPhone = styled(SkeletonBase)`
   width: 140px;
   height: 26px;
 `;
+
+export const SkeletonEmail = styled(SkeletonBase)`
+  width: 200px;
+  height: 26px;
+`;

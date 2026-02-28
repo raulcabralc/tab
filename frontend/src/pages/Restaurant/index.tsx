@@ -10,6 +10,7 @@ import {
   RestaurantContainer,
   RestaurantContent,
   SkeletonDescription,
+  SkeletonEmail,
   SkeletonModalButton,
   SkeletonPhone,
   TitleContainer,
@@ -25,6 +26,7 @@ import HoursModal, { DayHours } from "@/components/HoursModal";
 import CuisineModal from "@/components/CuisineModal";
 import DescriptionModal from "@/components/DescriptionModal";
 import PhoneModal from "@/components/PhoneModal";
+import EmailModal from "@/components/EmailModal";
 
 interface RestaurantInterface {
   _id: string;
@@ -75,6 +77,7 @@ function Restaurant() {
   const [isCuisineModalOpen, setIsCuisineModalOpen] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   const [restaurant, setRestaurant] = useState<RestaurantInterface | null>(
     null,
@@ -205,6 +208,34 @@ function Restaurant() {
     }
   };
 
+  const handleSaveEmail = async (email: string) => {
+    try {
+      const response = await api.patch(
+        `/restaurant/update/${restaurant?._id}`,
+        {
+          email,
+        },
+      );
+
+      setRestaurant(response.data);
+
+      setIsHoursModalOpen(false);
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "O e-mail foi atualizado.",
+      });
+    } catch (error) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Erro ao salvar",
+        message: "Não foi possível atualizar o e-mail. Tente novamente.",
+      });
+    }
+  };
+
   const maskPhone = (value: string) => {
     return value
       .replace(/\D/g, "")
@@ -303,7 +334,19 @@ function Restaurant() {
 
             <Detail>
               <DetailName>E-mail</DetailName>
-              <DetailValue>{restaurant?.email}</DetailValue>
+              {isLoadingData ? (
+                <SkeletonEmail />
+              ) : (
+                <DetailGrid>
+                  <DetailValue>{restaurant?.email}</DetailValue>
+                  <div
+                    className="svg-wrapper"
+                    onClick={() => setIsEmailModalOpen(true)}
+                  >
+                    <Pen size={18} />
+                  </div>
+                </DetailGrid>
+              )}
             </Detail>
           </CategoryGrid>
 
@@ -359,6 +402,16 @@ function Restaurant() {
               initialData={restaurant?.phone as string}
               onClose={() => setIsPhoneModalOpen(false)}
               onSave={handleSavePhone}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isEmailModalOpen && (
+            <EmailModal
+              initialData={restaurant?.email as string}
+              onClose={() => setIsEmailModalOpen(false)}
+              onSave={handleSaveEmail}
             />
           )}
         </AnimatePresence>
