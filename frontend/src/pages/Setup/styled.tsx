@@ -31,6 +31,10 @@ export const LoginTextArea = styled.textarea<{ $hasError?: boolean }>`
     border-color: ${(props) => props.theme.primary};
     background-color: transparent;
   }
+
+  @media (max-width: 410px) {
+    min-height: 140px;
+  }
 `;
 
 export const CharCounter = styled.span`

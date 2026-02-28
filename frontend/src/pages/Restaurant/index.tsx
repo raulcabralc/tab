@@ -3,11 +3,14 @@ import {
   Category,
   CategoryGrid,
   Detail,
+  DetailGrid,
   DetailName,
   DetailValue,
   ModalButton,
   RestaurantContainer,
   RestaurantContent,
+  SkeletonDescription,
+  SkeletonModalButton,
   TitleContainer,
   TitleImage,
   TitleText,
@@ -16,9 +19,10 @@ import api from "@/services/api";
 import { SkeletonTitleAvatar, SkeletonTitleText } from "../Dashboard/styled";
 import { AnimatePresence } from "framer-motion";
 import { StatusModal } from "@/components/StatusModal";
-import { Phone, Settings2, Store } from "lucide-react";
+import { Pen, Phone, Settings2, Store } from "lucide-react";
 import HoursModal, { DayHours } from "@/components/HoursModal";
 import CuisineModal from "@/components/CuisineModal";
+import DescriptionModal from "@/components/DescriptionModal";
 
 interface RestaurantInterface {
   _id: string;
@@ -67,6 +71,7 @@ function Restaurant() {
 
   const [isHoursModalOpen, setIsHoursModalOpen] = useState(false);
   const [isCuisineModalOpen, setIsCuisineModalOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
 
   const [restaurant, setRestaurant] = useState<RestaurantInterface | null>(
     null,
@@ -139,6 +144,34 @@ function Restaurant() {
     }
   };
 
+  const handleSaveDescription = async (description: string) => {
+    try {
+      const response = await api.patch(
+        `/restaurant/update/${restaurant?._id}`,
+        {
+          description,
+        },
+      );
+
+      setRestaurant(response.data);
+
+      setIsHoursModalOpen(false);
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "A descrição foi atualizada.",
+      });
+    } catch (error) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Erro ao salvar",
+        message: "Não foi possível atualizar a descrição. Tente novamente.",
+      });
+    }
+  };
+
   return (
     <>
       <RestaurantContainer>
@@ -160,7 +193,19 @@ function Restaurant() {
           <CategoryGrid>
             <Detail>
               <DetailName>Descrição</DetailName>
-              <DetailValue>{restaurant?.description}</DetailValue>
+              {isLoadingData ? (
+                <SkeletonDescription />
+              ) : (
+                <DetailGrid>
+                  <DetailValue>{restaurant?.description}</DetailValue>
+                  <div
+                    className="svg-wrapper"
+                    onClick={() => setIsDescriptionModalOpen(true)}
+                  >
+                    <Pen size={18} />
+                  </div>
+                </DetailGrid>
+              )}
             </Detail>
 
             <Detail
@@ -169,7 +214,11 @@ function Restaurant() {
               }}
             >
               <DetailName>Culinárias</DetailName>
-              <ModalButton>Clique para editar as culinárias</ModalButton>
+              {isLoadingData ? (
+                <SkeletonModalButton />
+              ) : (
+                <ModalButton>Clique para editar as culinárias</ModalButton>
+              )}
             </Detail>
 
             <Detail
@@ -178,7 +227,11 @@ function Restaurant() {
               }}
             >
               <DetailName>Horários</DetailName>
-              <ModalButton>Clique para editar os horários</ModalButton>
+              {isLoadingData ? (
+                <SkeletonModalButton />
+              ) : (
+                <ModalButton>Clique para editar os horários</ModalButton>
+              )}
             </Detail>
           </CategoryGrid>
 
@@ -229,6 +282,16 @@ function Restaurant() {
               initialData={restaurant?.cuisines as string[]}
               onClose={() => setIsCuisineModalOpen(false)}
               onSave={handleSaveCuisine}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isDescriptionModalOpen && (
+            <DescriptionModal
+              initialData={restaurant?.description as string}
+              onClose={() => setIsDescriptionModalOpen(false)}
+              onSave={handleSaveDescription}
             />
           )}
         </AnimatePresence>

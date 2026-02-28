@@ -83,14 +83,14 @@ function HoursModal({ onClose, onSave, initialData }: HoursModalProps) {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      if (initialData === localHours) {
-      } else {
+      if (initialData !== localHours) {
         await onSave(localHours);
       }
       setTimeout(() => {}, 100);
     } catch (e) {
       console.log(e);
     } finally {
+      onClose();
       setIsLoading(false);
     }
   };

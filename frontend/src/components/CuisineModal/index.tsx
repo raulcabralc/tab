@@ -67,11 +67,13 @@ function CuisineModal({ onClose, onSave, initialData }: CuisineModalProps) {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await onSave(cuisines);
-      onClose();
+      if (cuisines !== initialData) {
+        await onSave(cuisines);
+      }
     } catch (e) {
       console.error(e);
     } finally {
+      onClose();
       setIsLoading(false);
     }
   };

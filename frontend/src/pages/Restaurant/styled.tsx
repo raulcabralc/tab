@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import * as color from "../../styles/colors";
 import { hexToRgb } from "@/helpers/hexToRgb";
+import { SkeletonBase } from "../Dashboard/styled";
 
 export const RestaurantContainer = styled.div`
   padding: 100px 150px;
@@ -187,5 +188,52 @@ export const ModalButton = styled.div`
 
   @media (max-width: 410px) {
     font-size: 0.9rem;
+  }
+`;
+
+export const DetailGrid = styled.div`
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  gap: 10px;
+
+  .svg-wrapper {
+    padding: 5px;
+    background-color: ${(props) => props.theme.primary};
+    width: max-content;
+    border-radius: 4px;
+    display: flex;
+    transition: all 0.1s ease-in-out;
+
+    svg {
+      align-self: center;
+      color: ${color.white.light};
+    }
+
+    &:hover {
+      cursor: pointer;
+      opacity: 0.8;
+    }
+  }
+`;
+
+export const SkeletonDescription = styled(SkeletonBase)`
+  width: 280px;
+  height: 26px;
+
+  @media (max-width: 410px) {
+    width: 200px;
+    height: 80px;
+  }
+`;
+
+export const SkeletonModalButton = styled(SkeletonBase)`
+  padding: 10px;
+  width: 250px;
+  height: 45px;
+  border-radius: 10px;
+
+  @media (max-width: 410px) {
+    width: 230px;
+    height: 40px;
   }
 `;
