@@ -237,3 +237,8 @@ export const SkeletonModalButton = styled(SkeletonBase)`
     height: 40px;
   }
 `;
+
+export const SkeletonPhone = styled(SkeletonBase)`
+  width: 140px;
+  height: 26px;
+`;

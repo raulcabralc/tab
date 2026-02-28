@@ -11,6 +11,7 @@ import {
   RestaurantContent,
   SkeletonDescription,
   SkeletonModalButton,
+  SkeletonPhone,
   TitleContainer,
   TitleImage,
   TitleText,
@@ -23,6 +24,7 @@ import { Pen, Phone, Settings2, Store } from "lucide-react";
 import HoursModal, { DayHours } from "@/components/HoursModal";
 import CuisineModal from "@/components/CuisineModal";
 import DescriptionModal from "@/components/DescriptionModal";
+import PhoneModal from "@/components/PhoneModal";
 
 interface RestaurantInterface {
   _id: string;
@@ -72,6 +74,7 @@ function Restaurant() {
   const [isHoursModalOpen, setIsHoursModalOpen] = useState(false);
   const [isCuisineModalOpen, setIsCuisineModalOpen] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
 
   const [restaurant, setRestaurant] = useState<RestaurantInterface | null>(
     null,
@@ -172,6 +175,44 @@ function Restaurant() {
     }
   };
 
+  const handleSavePhone = async (phone: string) => {
+    try {
+      const phoneMasked = phone.replace(/\D/g, "");
+
+      const response = await api.patch(
+        `/restaurant/update/${restaurant?._id}`,
+        {
+          phone: phoneMasked,
+        },
+      );
+
+      setRestaurant(response.data);
+
+      setIsHoursModalOpen(false);
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "O telefone foi atualizado.",
+      });
+    } catch (error) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Erro ao salvar",
+        message: "Não foi possível atualizar o telefone. Tente novamente.",
+      });
+    }
+  };
+
+  const maskPhone = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{5})(\d)/, "$1-$2")
+      .replace(/(-\d{4})(\d+?)$/, "$1");
+  };
+
   return (
     <>
       <RestaurantContainer>
@@ -241,7 +282,23 @@ function Restaurant() {
           <CategoryGrid>
             <Detail>
               <DetailName>Telefone</DetailName>
-              <DetailValue>{restaurant?.phone}</DetailValue>
+              <DetailValue>
+                {isLoadingData ? (
+                  <SkeletonPhone />
+                ) : (
+                  <DetailGrid>
+                    <DetailValue>
+                      {maskPhone(restaurant?.phone as string)}
+                    </DetailValue>
+                    <div
+                      className="svg-wrapper"
+                      onClick={() => setIsPhoneModalOpen(true)}
+                    >
+                      <Pen size={18} />
+                    </div>
+                  </DetailGrid>
+                )}
+              </DetailValue>
             </Detail>
 
             <Detail>
@@ -292,6 +349,16 @@ function Restaurant() {
               initialData={restaurant?.description as string}
               onClose={() => setIsDescriptionModalOpen(false)}
               onSave={handleSaveDescription}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isPhoneModalOpen && (
+            <PhoneModal
+              initialData={restaurant?.phone as string}
+              onClose={() => setIsPhoneModalOpen(false)}
+              onSave={handleSavePhone}
             />
           )}
         </AnimatePresence>
