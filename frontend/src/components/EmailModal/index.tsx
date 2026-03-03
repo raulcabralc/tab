@@ -1,7 +1,7 @@
 import { X, Mail } from "lucide-react";
 import { ModalContainer, ModalHeader, ModalOverlay } from "../Sidebar/styled";
 import { ModalContent, EmailDetails, EmailMain, XButton } from "./styled";
-import { LoginButton, LoginInput } from "@/pages/Login/styled";
+import { ErrorMessage, LoginButton, LoginInput } from "@/pages/Login/styled";
 import { useState } from "react";
 import { modalVariants, overlayVariants } from "../UserModal";
 import { Spinner } from "../Spinner";
@@ -17,21 +17,33 @@ function EmailModal({ onClose, onSave, initialData }: EmailModalProps) {
     initialData.length > 0 ? initialData : null,
   );
 
+  const [emailError, setEmailError] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
+      if (!validateEmail(localEmail as string)) {
+        setEmailError(true);
+        return;
+      }
+
       if (initialData !== localEmail) {
         await onSave(localEmail as string);
       }
       setTimeout(() => {}, 100);
+      onClose();
     } catch (e) {
       console.log(e);
     } finally {
-      onClose();
       setIsLoading(false);
     }
+  };
+
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
   };
 
   return (
@@ -62,11 +74,16 @@ function EmailModal({ onClose, onSave, initialData }: EmailModalProps) {
 
           <EmailDetails style={{ maxHeight: "400px", overflowY: "auto" }}>
             <LoginInput
-              onChange={(e) => setLocalEmail(e.target.value)}
+              onChange={(e) => {
+                setLocalEmail(e.target.value);
+                setEmailError(false);
+              }}
               placeholder="tab@gmail.com"
               value={localEmail as string}
+              $hasError={emailError}
             />
           </EmailDetails>
+          <ErrorMessage $isAppearing={emailError}>E-mail inválido</ErrorMessage>
 
           <LoginButton
             onClick={handleSave}
