@@ -47,6 +47,12 @@ O projeto prioriza a clareza e a rapidez visual:
 2. **Eficiência de Input:** Seletores inteligentes e máscaras de campo para reduzir erros e o tempo de preenchimento.
 3. **Minimalismo:** Interfaces limpas que destacam apenas as informações cruciais para a operação do restaurante.
 
+<div align="center">
+  <img src="https://media.giphy.com/media/S2gYOfSeEjgu28oRDG/giphy.gif" alt="TAB Interface" width="600" />
+  <img src="https://media.giphy.com/media/wIiN6fSHTflaY05Eta/giphy.gif" alt="TAB Interface" width="600" />
+  <img src="https://media.giphy.com/media/kwIBtpieAdEC1b7pTL/giphy.gif" alt="TAB Interface" width="600" />
+</div>
+
 ---
 
 ⚡ _Feito por Raul Cabral_
