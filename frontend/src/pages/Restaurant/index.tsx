@@ -27,6 +27,7 @@ import CuisineModal from "@/components/CuisineModal";
 import DescriptionModal from "@/components/DescriptionModal";
 import PhoneModal from "@/components/PhoneModal";
 import EmailModal from "@/components/EmailModal";
+import TableModal from "@/components/TablesModal";
 
 interface RestaurantInterface {
   _id: string;
@@ -78,6 +79,7 @@ function Restaurant() {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
 
   const [restaurant, setRestaurant] = useState<RestaurantInterface | null>(
     null,
@@ -236,6 +238,35 @@ function Restaurant() {
     }
   };
 
+  const handleSaveTables = async (tables: number) => {
+    try {
+      const response = await api.patch(
+        `/restaurant/update/${restaurant?._id}`,
+        {
+          totalTables: tables,
+        },
+      );
+
+      setRestaurant(response.data);
+
+      setIsHoursModalOpen(false);
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "O número de mesas foi atualizado.",
+      });
+    } catch (error) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Erro ao salvar",
+        message:
+          "Não foi possível atualizar o número de mesas. Tente novamente.",
+      });
+    }
+  };
+
   const maskPhone = (value: string) => {
     return value
       .replace(/\D/g, "")
@@ -356,12 +387,28 @@ function Restaurant() {
           <CategoryGrid>
             <Detail>
               <DetailName>Mesas</DetailName>
-              <DetailValue>{restaurant?.totalTables || 0}</DetailValue>
+              {isLoadingData ? (
+                <SkeletonPhone />
+              ) : (
+                <DetailGrid>
+                  <DetailValue>{restaurant?.totalTables || 0}</DetailValue>
+                  <div
+                    className="svg-wrapper"
+                    onClick={() => setIsTableModalOpen(true)}
+                  >
+                    <Pen size={18} />
+                  </div>
+                </DetailGrid>
+              )}
             </Detail>
 
             <Detail>
               <DetailName>Cardápio</DetailName>
-              <DetailValue>{restaurant?.menu.join(", ")}</DetailValue>
+              {isLoadingData ? (
+                <SkeletonModalButton />
+              ) : (
+                <ModalButton>Clique para editar o cardápio</ModalButton>
+              )}
             </Detail>
           </CategoryGrid>
         </RestaurantContent>
@@ -412,6 +459,16 @@ function Restaurant() {
               initialData={restaurant?.email as string}
               onClose={() => setIsEmailModalOpen(false)}
               onSave={handleSaveEmail}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isTableModalOpen && (
+            <TableModal
+              initialData={restaurant?.totalTables as number}
+              onClose={() => setIsTableModalOpen(false)}
+              onSave={handleSaveTables}
             />
           )}
         </AnimatePresence>

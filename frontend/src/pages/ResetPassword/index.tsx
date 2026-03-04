@@ -129,12 +129,12 @@ export function ResetPassword() {
       setEmailError(!isEmailValid);
 
       if (isEmailValid) {
-        const userData = await createCode(); // Recebe os dados diretamente aqui
+        const userData = await createCode();
 
         if (userData) {
-          setUser(userData); // Atualiza o estado para os próximos passos
+          setUser(userData);
           setDirection(1);
-          setStep(2); // Avança para as "casinhas" do código
+          setStep(2);
         }
       }
     } else if (step === 2) {
@@ -203,10 +203,8 @@ export function ResetPassword() {
     try {
       setButtonDisabled(true);
 
-      // Chamada para o seu backend NestJS
       const response = await api.post("/auth/forgot-password", { email });
 
-      // Se o backend retornou sucesso
       if (response.data && response.data.resetPasswordCode) {
         setModalConfig({
           isOpen: true,
@@ -217,10 +215,9 @@ export function ResetPassword() {
           isFirstLogin: true,
         });
 
-        return response.data; // Retornamos os dados para uso imediato
+        return response.data;
       }
 
-      // Tratamento de erro caso o sucesso seja falso (ex: e-mail não encontrado)
       if (response.data.success === false) {
         const errorMessage =
           response.data.message === `User with email ${email} not found.`
