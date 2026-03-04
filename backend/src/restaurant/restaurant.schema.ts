@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import type { Address } from "./types/interface/address.interface";
 import { OpeningHours } from "./types/interface/opening-hours.interface";
-import { MenuItem } from "./types/interface/menu-item.interface";
+import type { Menu } from "./types/interface/menu.interface";
 
 @Schema({ timestamps: true })
 export class Restaurant {
@@ -36,7 +36,7 @@ export class Restaurant {
   totalTables: number;
 
   @Prop({ type: [Object], required: false })
-  menu: MenuItem[];
+  menu: Menu;
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);
