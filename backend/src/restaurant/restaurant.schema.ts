@@ -35,7 +35,7 @@ export class Restaurant {
   @Prop({ required: false })
   totalTables: number;
 
-  @Prop({ type: [Object], required: false })
+  @Prop({ type: Object, required: false })
   menu: Menu;
 }
 
