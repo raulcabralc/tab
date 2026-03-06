@@ -7,7 +7,7 @@ import {
 } from "class-validator";
 import type { Address } from "../interface/address.interface";
 import { OpeningHours } from "../interface/opening-hours.interface";
-import { MenuItem } from "../interface/menu-item.interface";
+import type { Menu } from "../interface/menu.interface";
 
 export class CreateRestaurantDTO {
   @IsString()
@@ -39,5 +39,5 @@ export class CreateRestaurantDTO {
   totalTables?: number;
 
   @IsOptional()
-  menu?: MenuItem[];
+  menu?: Menu;
 }

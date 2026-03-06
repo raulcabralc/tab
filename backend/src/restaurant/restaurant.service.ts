@@ -9,10 +9,10 @@ import { CreateRestaurantDTO } from "./types/dto/create-restaurant.dto";
 import { Restaurant, RestaurantDocument } from "./restaurant.schema";
 import { Address } from "./types/interface/address.interface";
 import { OpeningHours } from "./types/interface/opening-hours.interface";
-import { MenuItem } from "./types/interface/menu-item.interface";
 import { SetupDTO } from "./types/dto/setup.dto";
 import { WorkerService } from "../worker/worker.service";
 import { WorkerRole } from "../worker/types/enums/role.enum";
+import type { Menu } from "./types/interface/menu.interface";
 
 @Injectable()
 export class RestaurantService {
@@ -61,8 +61,7 @@ export class RestaurantService {
 
       if (!isValidMenu)
         throw new BadRequestException(
-          "Invalid menu. Menu required fields: ",
-          ["category", "name", "description", "price"].join(", "),
+          "Invalid menu. Menu required fields: items, categories",
         );
     }
 
@@ -138,8 +137,7 @@ export class RestaurantService {
 
       if (!isValidMenu)
         throw new BadRequestException(
-          "Invalid menu. Menu required fields: ",
-          ["category", "name", "description", "price"].join(", "),
+          "Invalid menu. Menu required fields: items, categories",
         );
     }
 
@@ -323,17 +321,27 @@ export class RestaurantService {
     return true;
   }
 
-  private validateMenu(menu: MenuItem[]): boolean {
+  private validateMenu(menu: Menu): boolean {
     const menuFields = ["category", "name", "description", "price"];
 
     const menuErrors: string[] = [];
-    menu.forEach((item) => {
-      menuFields.map((field) => {
-        if (!item[field]) {
-          menuErrors.push(field);
-        }
+    if (menu.items && menu.items.length > 0) {
+      menu.items.forEach((item) => {
+        menuFields.map((field) => {
+          if (!item[field]) {
+            menuErrors.push(field);
+          }
+        });
       });
-    });
+    }
+
+    if (!menu.categories || menu.categories.length <= 0) {
+      menuErrors.push("categories");
+    }
+
+    if (!menu.items || menu.items.length <= 0) {
+      menuErrors.push("items");
+    }
 
     if (menuErrors.length > 0) return false;
 
