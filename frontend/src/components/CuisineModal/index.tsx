@@ -146,7 +146,9 @@ function CuisineModal({ onClose, onSave, initialData }: CuisineModalProps) {
                   </Tag>
                 ))
               ) : (
-                <NoCuisines>No cuisines for this restaurant yet</NoCuisines>
+                <NoCuisines>
+                  Nenhuma culinária adicionada para este restaurante
+                </NoCuisines>
               )}
             </AnimatePresence>
           </TagContainer>

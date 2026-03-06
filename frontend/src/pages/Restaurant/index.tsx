@@ -28,6 +28,7 @@ import DescriptionModal from "@/components/DescriptionModal";
 import PhoneModal from "@/components/PhoneModal";
 import EmailModal from "@/components/EmailModal";
 import TableModal from "@/components/TablesModal";
+import MenuModal from "@/components/MenuModal";
 
 interface RestaurantInterface {
   _id: string;
@@ -40,7 +41,20 @@ interface RestaurantInterface {
   totalTables: number;
   cuisines: string[];
   openingHours: DayHours[];
-  menu: string[];
+  menu: Menu;
+}
+
+export interface MenuItem {
+  category: string;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+}
+
+export interface Menu {
+  items: MenuItem[];
+  categories: string[];
 }
 
 function Restaurant() {
@@ -80,6 +94,7 @@ function Restaurant() {
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+  const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
 
   const [restaurant, setRestaurant] = useState<RestaurantInterface | null>(
     null,
@@ -267,6 +282,40 @@ function Restaurant() {
     }
   };
 
+  const handleSaveMenu = async (
+    menuItems: MenuItem[],
+    menuCategories: string[],
+  ) => {
+    try {
+      const response = await api.patch(
+        `/restaurant/update/${restaurant?._id}`,
+        {
+          menu: {
+            items: menuItems,
+            categories: menuCategories,
+          },
+        },
+      );
+
+      setRestaurant(response.data);
+
+      setIsHoursModalOpen(false);
+      setModalConfig({
+        isOpen: true,
+        type: "success",
+        title: "Sucesso!",
+        message: "O cardápio foi atualizado.",
+      });
+    } catch (error) {
+      setModalConfig({
+        isOpen: true,
+        type: "error",
+        title: "Erro ao salvar",
+        message: "Não foi possível atualizar o cardápio. Tente novamente.",
+      });
+    }
+  };
+
   const maskPhone = (value: string) => {
     return value
       .replace(/\D/g, "")
@@ -372,7 +421,9 @@ function Restaurant() {
                   <DetailValue>{restaurant?.email}</DetailValue>
                   <div
                     className="svg-wrapper"
-                    onClick={() => setIsEmailModalOpen(true)}
+                    onClick={() =>
+                      isLoadingData ? 0 : setIsEmailModalOpen(true)
+                    }
                   >
                     <Pen size={18} />
                   </div>
@@ -394,7 +445,9 @@ function Restaurant() {
                   <DetailValue>{restaurant?.totalTables || 0}</DetailValue>
                   <div
                     className="svg-wrapper"
-                    onClick={() => setIsTableModalOpen(true)}
+                    onClick={() =>
+                      isLoadingData ? 0 : setIsTableModalOpen(true)
+                    }
                   >
                     <Pen size={18} />
                   </div>
@@ -402,7 +455,9 @@ function Restaurant() {
               )}
             </Detail>
 
-            <Detail>
+            <Detail
+              onClick={() => (isLoadingData ? 0 : setIsMenuModalOpen(true))}
+            >
               <DetailName>Cardápio</DetailName>
               {isLoadingData ? (
                 <SkeletonModalButton />
@@ -469,6 +524,19 @@ function Restaurant() {
               initialData={restaurant?.totalTables as number}
               onClose={() => setIsTableModalOpen(false)}
               onSave={handleSaveTables}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isMenuModalOpen && (
+            <MenuModal
+              initialData={{
+                menuItems: (restaurant?.menu.items as MenuItem[]) || [],
+                menuCategories: (restaurant?.menu.categories as string[]) || [],
+              }}
+              onClose={() => setIsMenuModalOpen(false)}
+              onSave={handleSaveMenu}
             />
           )}
         </AnimatePresence>

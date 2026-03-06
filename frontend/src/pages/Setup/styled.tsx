@@ -22,10 +22,6 @@ export const LoginTextArea = styled.textarea<{ $hasError?: boolean }>`
     -apple-system,
     sans-serif;
 
-  &::placeholder {
-    opacity: 0.5;
-  }
-
   &:focus {
     outline: none;
     border-color: ${(props) => props.theme.primary};

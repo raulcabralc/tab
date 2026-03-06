@@ -324,8 +324,6 @@ export function Setup() {
         formData,
       );
 
-      console.log(response.data);
-
       setRestaurantImage(response.data.secure_url);
     } catch (e) {
       console.log("Erro:", e);
